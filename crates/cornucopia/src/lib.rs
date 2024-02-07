@@ -84,10 +84,17 @@ pub fn generate_managed<P: AsRef<Path>>(
         .map(parse_query_module)
         .collect::<Result<_, parser::error::Error>>()?;
     container::setup(podman)?;
-    let mut client = conn::cornucopia_conn()?;
-    load_schema(&mut client, schema_files)?;
-    let prepared_modules = prepare(&mut client, modules)?;
-    let generated_code = generate_internal(prepared_modules, settings);
+    {
+        let mut client = conn::cornucopia_conn()?;
+        load_schema(&mut client, schema_files)?;
+        // should be cut the connection here.
+        // because the schema file may set the search_path.
+    }
+    let generated_code = {
+        let mut client = conn::cornucopia_conn()?;
+        let prepared_modules = prepare(&mut client, modules)?;
+        generate_internal(prepared_modules, settings)
+    };
     container::cleanup(podman)?;
 
     if let Some(destination) = destination {
