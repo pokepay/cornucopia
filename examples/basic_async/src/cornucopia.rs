@@ -210,8 +210,7 @@ pub mod types {
 pub mod queries {
     pub mod module_1 {
         use cornucopia_async::GenericClient;
-        use futures;
-        use futures::{StreamExt, TryStreamExt};
+        use futures_util::{StreamExt, TryStreamExt};
         pub fn insert_book() -> InsertBookStmt {
             InsertBookStmt(
                 "INSERT INTO Book (title)
@@ -315,8 +314,7 @@ pub mod queries {
             }
         }
         use cornucopia_async::GenericClient;
-        use futures;
-        use futures::{StreamExt, TryStreamExt};
+        use futures_util::{StreamExt, TryStreamExt};
         pub struct AuthorsQuery<'a, C: GenericClient, T, const N: usize> {
             client: &'a C,
             params: [&'a (dyn postgres_types::ToSql + Sync); N],
@@ -365,7 +363,7 @@ pub mod queries {
             pub async fn iter(
                 self,
             ) -> Result<
-                impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
+                impl futures_util::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
                 tokio_postgres::Error,
             > {
                 let stream = cornucopia_async::private::raw(
@@ -429,7 +427,7 @@ pub mod queries {
             pub async fn iter(
                 self,
             ) -> Result<
-                impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
+                impl futures_util::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
                 tokio_postgres::Error,
             > {
                 let stream = cornucopia_async::private::raw(
@@ -496,7 +494,7 @@ pub mod queries {
             pub async fn iter(
                 self,
             ) -> Result<
-                impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
+                impl futures_util::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
                 tokio_postgres::Error,
             > {
                 let stream = cornucopia_async::private::raw(
@@ -563,7 +561,7 @@ pub mod queries {
             pub async fn iter(
                 self,
             ) -> Result<
-                impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
+                impl futures_util::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
                 tokio_postgres::Error,
             > {
                 let stream = cornucopia_async::private::raw(
@@ -630,7 +628,7 @@ pub mod queries {
             pub async fn iter(
                 self,
             ) -> Result<
-                impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
+                impl futures_util::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
                 tokio_postgres::Error,
             > {
                 let stream = cornucopia_async::private::raw(

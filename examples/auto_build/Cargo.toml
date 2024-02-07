@@ -13,7 +13,7 @@ cornucopia_async = { path = "../../crates/client_async" }
 
 # Async
 tokio = { version = "1.24.2", features = ["full"] }
-futures = "0.3.25"
+futures-util = "0.3.25"
 
 # Postgres interaction
 tokio-postgres = "0.7.7"

@@ -6,7 +6,7 @@
 #[allow(dead_code)]
 pub mod types {
     pub mod public {
-        #[derive(serde::Serialize, Debug, postgres_types :: FromSql, Clone, PartialEq)]
+        #[derive(Debug, postgres_types :: FromSql, Clone, PartialEq)]
         #[postgres(name = "clone_composite")]
         pub struct CloneComposite {
             #[postgres(name = "first")]
@@ -119,7 +119,7 @@ pub mod types {
                 postgres_types::__to_sql_checked(self, ty, out)
             }
         }
-        #[derive(serde::Serialize, Debug, postgres_types :: FromSql, Copy, Clone, PartialEq)]
+        #[derive(Debug, postgres_types :: FromSql, Copy, Clone, PartialEq)]
         #[postgres(name = "copy_composite")]
         pub struct CopyComposite {
             #[postgres(name = "first")]
@@ -190,7 +190,7 @@ pub mod types {
                 postgres_types::__to_sql_checked(self, ty, out)
             }
         }
-        #[derive(serde::Serialize, Debug, postgres_types :: FromSql, Clone, PartialEq)]
+        #[derive(Debug, postgres_types :: FromSql, Clone, PartialEq)]
         #[postgres(name = "domain_composite")]
         pub struct DomainComposite {
             #[postgres(name = "txt")]
@@ -352,7 +352,7 @@ pub mod types {
                 postgres_types::__to_sql_checked(self, ty, out)
             }
         }
-        #[derive(serde::Serialize, Debug, postgres_types :: FromSql, Clone, PartialEq)]
+        #[derive(Debug, postgres_types :: FromSql, Clone, PartialEq)]
         #[postgres(name = "named_composite")]
         pub struct NamedComposite {
             #[postgres(name = "wow")]
@@ -465,7 +465,7 @@ pub mod types {
                 postgres_types::__to_sql_checked(self, ty, out)
             }
         }
-        #[derive(serde::Serialize, Debug, Clone, Copy, PartialEq, Eq)]
+        #[derive(Debug, Clone, Copy, PartialEq, Eq)]
         #[allow(non_camel_case_types)]
         pub enum EnumWithDot {
             variant_with_dot,
@@ -537,7 +537,7 @@ pub mod types {
                 }
             }
         }
-        #[derive(serde::Serialize, Debug, postgres_types :: FromSql, Copy, Clone, PartialEq)]
+        #[derive(Debug, postgres_types :: FromSql, Copy, Clone, PartialEq)]
         #[postgres(name = "named_composite.with_dot")]
         pub struct NamedCompositeWithDot {
             #[postgres(name = "this.is.inconceivable")]
@@ -612,7 +612,7 @@ pub mod types {
                 postgres_types::__to_sql_checked(self, ty, out)
             }
         }
-        #[derive(serde::Serialize, Debug, postgres_types :: FromSql, Clone, PartialEq)]
+        #[derive(Debug, postgres_types :: FromSql, Clone, PartialEq)]
         #[postgres(name = "nullity_composite")]
         pub struct NullityComposite {
             #[postgres(name = "jsons")]
@@ -741,7 +741,7 @@ pub mod types {
                 postgres_types::__to_sql_checked(self, ty, out)
             }
         }
-        #[derive(serde::Serialize, Debug, Clone, Copy, PartialEq, Eq)]
+        #[derive(Debug, Clone, Copy, PartialEq, Eq)]
         #[allow(non_camel_case_types)]
         pub enum SpongebobCharacter {
             Bob,
@@ -823,7 +823,7 @@ pub mod types {
                 }
             }
         }
-        #[derive(serde::Serialize, Debug, postgres_types :: FromSql, Clone, PartialEq)]
+        #[derive(Debug, postgres_types :: FromSql, Clone, PartialEq)]
         #[postgres(name = "custom_composite")]
         pub struct CustomComposite {
             #[postgres(name = "wow")]
@@ -959,7 +959,7 @@ pub mod types {
                 postgres_types::__to_sql_checked(self, ty, out)
             }
         }
-        #[derive(serde::Serialize, Debug, postgres_types :: FromSql, Clone, PartialEq)]
+        #[derive(Debug, postgres_types :: FromSql, Clone, PartialEq)]
         #[postgres(name = "nightmare_composite")]
         pub struct NightmareComposite {
             #[postgres(name = "custom")]
@@ -1106,7 +1106,7 @@ pub mod types {
                 postgres_types::__to_sql_checked(self, ty, out)
             }
         }
-        #[derive(serde::Serialize, Debug, postgres_types :: FromSql, Copy, Clone, PartialEq)]
+        #[derive(Debug, postgres_types :: FromSql, Copy, Clone, PartialEq)]
         #[postgres(name = "syntax_composite")]
         pub struct SyntaxComposite {
             #[postgres(name = "async")]
@@ -1173,7 +1173,7 @@ pub mod types {
                 postgres_types::__to_sql_checked(self, ty, out)
             }
         }
-        #[derive(serde::Serialize, Debug, Clone, Copy, PartialEq, Eq)]
+        #[derive(Debug, Clone, Copy, PartialEq, Eq)]
         #[allow(non_camel_case_types)]
         pub enum SyntaxEnum {
             r#async,
@@ -1498,8 +1498,7 @@ pub mod queries {
         }
         pub mod async_ {
             use cornucopia_async::GenericClient;
-            use futures;
-            use futures::{StreamExt, TryStreamExt};
+            use futures_util::{StreamExt, TryStreamExt};
             pub struct PublicCloneCompositeQuery<'a, C: GenericClient, T, const N: usize> {
                 client: &'a C,
                 params: [&'a (dyn postgres_types::ToSql + Sync); N],
@@ -1554,7 +1553,7 @@ pub mod queries {
                 pub async fn iter(
                     self,
                 ) -> Result<
-                    impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
+                    impl futures_util::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
                     tokio_postgres::Error,
                 > {
                     let stream = cornucopia_async::private::raw(
@@ -1622,7 +1621,7 @@ pub mod queries {
                 pub async fn iter(
                     self,
                 ) -> Result<
-                    impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
+                    impl futures_util::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
                     tokio_postgres::Error,
                 > {
                     let stream = cornucopia_async::private::raw(
@@ -1757,7 +1756,7 @@ pub mod queries {
             pub arr: T4,
             pub composite: Option<super::super::types::public::DomainCompositeParams<'a>>,
         }
-        #[derive(serde::Serialize, Debug, Clone, PartialEq)]
+        #[derive(Debug, Clone, PartialEq)]
         pub struct SelectNightmareDomain {
             pub txt: String,
             pub json: serde_json::Value,
@@ -1789,7 +1788,7 @@ pub mod queries {
                 }
             }
         }
-        #[derive(serde::Serialize, Debug, Clone, PartialEq)]
+        #[derive(Debug, Clone, PartialEq)]
         pub struct SelectNightmareDomainNull {
             pub txt: Option<String>,
             pub json: Option<serde_json::Value>,
@@ -2100,8 +2099,7 @@ pub mod queries {
         }
         pub mod async_ {
             use cornucopia_async::GenericClient;
-            use futures;
-            use futures::{StreamExt, TryStreamExt};
+            use futures_util::{StreamExt, TryStreamExt};
             pub struct SelectNightmareDomainQuery<'a, C: GenericClient, T, const N: usize> {
                 client: &'a C,
                 params: [&'a (dyn postgres_types::ToSql + Sync); N],
@@ -2153,7 +2151,7 @@ pub mod queries {
                 pub async fn iter(
                     self,
                 ) -> Result<
-                    impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
+                    impl futures_util::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
                     tokio_postgres::Error,
                 > {
                     let stream = cornucopia_async::private::raw(
@@ -2220,7 +2218,7 @@ pub mod queries {
                 pub async fn iter(
                     self,
                 ) -> Result<
-                    impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
+                    impl futures_util::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
                     tokio_postgres::Error,
                 > {
                     let stream = cornucopia_async::private::raw(
@@ -2327,7 +2325,7 @@ pub mod queries {
                     super::InsertNightmareDomainParams<'a, T1, T2, T3, T4>,
                     std::pin::Pin<
                         Box<
-                            dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                            dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                                 + Send
                                 + 'a,
                         >,
@@ -2341,7 +2339,7 @@ pub mod queries {
                     params: &'a super::InsertNightmareDomainParams<'a, T1, T2, T3, T4>,
                 ) -> std::pin::Pin<
                     Box<
-                        dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                        dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                             + Send
                             + 'a,
                     >,
@@ -2405,11 +2403,11 @@ pub mod queries {
             pub named: super::super::types::public::NamedCompositeBorrowed<'a>,
             pub named_with_dot: Option<super::super::types::public::NamedCompositeWithDot>,
         }
-        #[derive(serde::Serialize, Debug, Clone, PartialEq, Copy)]
+        #[derive(Debug, Clone, PartialEq, Copy)]
         pub struct Id {
             pub id: i32,
         }
-        #[derive(serde::Serialize, Debug, Clone, PartialEq)]
+        #[derive(Debug, Clone, PartialEq)]
         pub struct Named {
             pub id: i32,
             pub name: String,
@@ -2439,7 +2437,7 @@ pub mod queries {
                 }
             }
         }
-        #[derive(serde::Serialize, Debug, Clone, PartialEq)]
+        #[derive(Debug, Clone, PartialEq)]
         pub struct NamedComplex {
             pub named: super::super::types::public::NamedComposite,
             pub named_with_dot: Option<super::super::types::public::NamedCompositeWithDot>,
@@ -2870,8 +2868,7 @@ pub mod queries {
         }
         pub mod async_ {
             use cornucopia_async::GenericClient;
-            use futures;
-            use futures::{StreamExt, TryStreamExt};
+            use futures_util::{StreamExt, TryStreamExt};
             pub struct IdQuery<'a, C: GenericClient, T, const N: usize> {
                 client: &'a C,
                 params: [&'a (dyn postgres_types::ToSql + Sync); N],
@@ -2920,7 +2917,7 @@ pub mod queries {
                 pub async fn iter(
                     self,
                 ) -> Result<
-                    impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
+                    impl futures_util::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
                     tokio_postgres::Error,
                 > {
                     let stream = cornucopia_async::private::raw(
@@ -2987,7 +2984,7 @@ pub mod queries {
                 pub async fn iter(
                     self,
                 ) -> Result<
-                    impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
+                    impl futures_util::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
                     tokio_postgres::Error,
                 > {
                     let stream = cornucopia_async::private::raw(
@@ -3054,7 +3051,7 @@ pub mod queries {
                 pub async fn iter(
                     self,
                 ) -> Result<
-                    impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
+                    impl futures_util::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
                     tokio_postgres::Error,
                 > {
                     let stream = cornucopia_async::private::raw(
@@ -3259,7 +3256,7 @@ pub mod queries {
                     super::NamedComplexParams<'a>,
                     std::pin::Pin<
                         Box<
-                            dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                            dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                                 + Send
                                 + 'a,
                         >,
@@ -3273,7 +3270,7 @@ pub mod queries {
                     params: &'a super::NamedComplexParams<'a>,
                 ) -> std::pin::Pin<
                     Box<
-                        dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                        dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                             + Send
                             + 'a,
                     >,
@@ -3324,7 +3321,7 @@ pub mod queries {
             pub name: T3,
             pub composite: Option<super::super::types::public::NullityCompositeParams<'a>>,
         }
-        #[derive(serde::Serialize, Debug, Clone, PartialEq)]
+        #[derive(Debug, Clone, PartialEq)]
         pub struct Nullity {
             pub texts: Vec<Option<String>>,
             pub name: String,
@@ -3503,8 +3500,7 @@ pub mod queries {
         }
         pub mod async_ {
             use cornucopia_async::GenericClient;
-            use futures;
-            use futures::{StreamExt, TryStreamExt};
+            use futures_util::{StreamExt, TryStreamExt};
             pub struct NullityQuery<'a, C: GenericClient, T, const N: usize> {
                 client: &'a C,
                 params: [&'a (dyn postgres_types::ToSql + Sync); N],
@@ -3556,7 +3552,7 @@ pub mod queries {
                 pub async fn iter(
                     self,
                 ) -> Result<
-                    impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
+                    impl futures_util::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
                     tokio_postgres::Error,
                 > {
                     let stream = cornucopia_async::private::raw(
@@ -3617,7 +3613,7 @@ pub mod queries {
                     super::NullityParams<'a, T1, T2, T3>,
                     std::pin::Pin<
                         Box<
-                            dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                            dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                                 + Send
                                 + 'a,
                         >,
@@ -3631,7 +3627,7 @@ pub mod queries {
                     params: &'a super::NullityParams<'a, T1, T2, T3>,
                 ) -> std::pin::Pin<
                     Box<
-                        dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                        dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                             + Send
                             + 'a,
                     >,
@@ -3685,7 +3681,7 @@ pub mod queries {
             pub c: i32,
             pub a: i32,
         }
-        #[derive(serde::Serialize, Debug, Clone, PartialEq)]
+        #[derive(Debug, Clone, PartialEq)]
         pub struct SelectBook {
             pub name: String,
             pub author: Option<String>,
@@ -3702,7 +3698,7 @@ pub mod queries {
                 }
             }
         }
-        #[derive(serde::Serialize, Debug, Clone, PartialEq)]
+        #[derive(Debug, Clone, PartialEq)]
         pub struct FindBooks {
             pub name: String,
             pub author: Option<String>,
@@ -4020,8 +4016,7 @@ pub mod queries {
         }
         pub mod async_ {
             use cornucopia_async::GenericClient;
-            use futures;
-            use futures::{StreamExt, TryStreamExt};
+            use futures_util::{StreamExt, TryStreamExt};
             pub struct SelectBookQuery<'a, C: GenericClient, T, const N: usize> {
                 client: &'a C,
                 params: [&'a (dyn postgres_types::ToSql + Sync); N],
@@ -4073,7 +4068,7 @@ pub mod queries {
                 pub async fn iter(
                     self,
                 ) -> Result<
-                    impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
+                    impl futures_util::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
                     tokio_postgres::Error,
                 > {
                     let stream = cornucopia_async::private::raw(
@@ -4140,7 +4135,7 @@ pub mod queries {
                 pub async fn iter(
                     self,
                 ) -> Result<
-                    impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
+                    impl futures_util::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
                     tokio_postgres::Error,
                 > {
                     let stream = cornucopia_async::private::raw(
@@ -4193,7 +4188,7 @@ pub mod queries {
                     super::InsertBookParams<T1, T2>,
                     std::pin::Pin<
                         Box<
-                            dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                            dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                                 + Send
                                 + 'a,
                         >,
@@ -4207,7 +4202,7 @@ pub mod queries {
                     params: &'a super::InsertBookParams<T1, T2>,
                 ) -> std::pin::Pin<
                     Box<
-                        dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                        dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                             + Send
                             + 'a,
                     >,
@@ -4329,7 +4324,7 @@ pub mod queries {
                     super::ParamsOrderParams,
                     std::pin::Pin<
                         Box<
-                            dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                            dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                                 + Send
                                 + 'a,
                         >,
@@ -4343,7 +4338,7 @@ pub mod queries {
                     params: &'a super::ParamsOrderParams,
                 ) -> std::pin::Pin<
                     Box<
-                        dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                        dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                             + Send
                             + 'a,
                     >,
@@ -4384,12 +4379,12 @@ pub mod queries {
             pub text_: T1,
             pub varchar_: T2,
             pub bytea_: T3,
-            pub timestamp_: time::PrimitiveDateTime,
-            pub timestamp_without_time_zone_: time::PrimitiveDateTime,
-            pub timestamptz_: time::OffsetDateTime,
-            pub timestamp_with_time_zone_: time::OffsetDateTime,
-            pub date_: time::Date,
-            pub time_: time::Time,
+            pub timestamp_: chrono::NaiveDateTime,
+            pub timestamp_without_time_zone_: chrono::NaiveDateTime,
+            pub timestamptz_: chrono::DateTime<chrono::Utc>,
+            pub timestamp_with_time_zone_: chrono::DateTime<chrono::Utc>,
+            pub date_: chrono::NaiveDate,
+            pub time_: chrono::NaiveTime,
             pub json_: T4,
             pub jsonb_: T5,
             pub uuid_: uuid::Uuid,
@@ -4418,12 +4413,12 @@ pub mod queries {
             T17: cornucopia_async::ArraySql<Item = T16>,
             T18: cornucopia_async::BytesSql,
             T19: cornucopia_async::ArraySql<Item = T18>,
-            T20: cornucopia_async::ArraySql<Item = time::PrimitiveDateTime>,
-            T21: cornucopia_async::ArraySql<Item = time::PrimitiveDateTime>,
-            T22: cornucopia_async::ArraySql<Item = time::OffsetDateTime>,
-            T23: cornucopia_async::ArraySql<Item = time::OffsetDateTime>,
-            T24: cornucopia_async::ArraySql<Item = time::Date>,
-            T25: cornucopia_async::ArraySql<Item = time::Time>,
+            T20: cornucopia_async::ArraySql<Item = chrono::NaiveDateTime>,
+            T21: cornucopia_async::ArraySql<Item = chrono::NaiveDateTime>,
+            T22: cornucopia_async::ArraySql<Item = chrono::DateTime<chrono::Utc>>,
+            T23: cornucopia_async::ArraySql<Item = chrono::DateTime<chrono::Utc>>,
+            T24: cornucopia_async::ArraySql<Item = chrono::NaiveDate>,
+            T25: cornucopia_async::ArraySql<Item = chrono::NaiveTime>,
             T26: cornucopia_async::JsonSql,
             T27: cornucopia_async::ArraySql<Item = T26>,
             T28: cornucopia_async::JsonSql,
@@ -4462,7 +4457,7 @@ pub mod queries {
             pub macaddr_: T32,
             pub numeric_: T33,
         }
-        #[derive(serde::Serialize, Debug, Clone, PartialEq)]
+        #[derive(Debug, Clone, PartialEq)]
         pub struct Everything {
             pub bool_: bool,
             pub boolean_: bool,
@@ -4486,12 +4481,12 @@ pub mod queries {
             pub text_: String,
             pub varchar_: String,
             pub bytea_: Vec<u8>,
-            pub timestamp_: time::PrimitiveDateTime,
-            pub timestamp_without_time_zone_: time::PrimitiveDateTime,
-            pub timestamptz_: time::OffsetDateTime,
-            pub timestamp_with_time_zone_: time::OffsetDateTime,
-            pub date_: time::Date,
-            pub time_: time::Time,
+            pub timestamp_: chrono::NaiveDateTime,
+            pub timestamp_without_time_zone_: chrono::NaiveDateTime,
+            pub timestamptz_: chrono::DateTime<chrono::Utc>,
+            pub timestamp_with_time_zone_: chrono::DateTime<chrono::Utc>,
+            pub date_: chrono::NaiveDate,
+            pub time_: chrono::NaiveTime,
             pub json_: serde_json::Value,
             pub jsonb_: serde_json::Value,
             pub uuid_: uuid::Uuid,
@@ -4522,12 +4517,12 @@ pub mod queries {
             pub text_: &'a str,
             pub varchar_: &'a str,
             pub bytea_: &'a [u8],
-            pub timestamp_: time::PrimitiveDateTime,
-            pub timestamp_without_time_zone_: time::PrimitiveDateTime,
-            pub timestamptz_: time::OffsetDateTime,
-            pub timestamp_with_time_zone_: time::OffsetDateTime,
-            pub date_: time::Date,
-            pub time_: time::Time,
+            pub timestamp_: chrono::NaiveDateTime,
+            pub timestamp_without_time_zone_: chrono::NaiveDateTime,
+            pub timestamptz_: chrono::DateTime<chrono::Utc>,
+            pub timestamp_with_time_zone_: chrono::DateTime<chrono::Utc>,
+            pub date_: chrono::NaiveDate,
+            pub time_: chrono::NaiveTime,
             pub json_: postgres_types::Json<&'a serde_json::value::RawValue>,
             pub jsonb_: postgres_types::Json<&'a serde_json::value::RawValue>,
             pub uuid_: uuid::Uuid,
@@ -4612,7 +4607,7 @@ pub mod queries {
                 }
             }
         }
-        #[derive(serde::Serialize, Debug, Clone, PartialEq)]
+        #[derive(Debug, Clone, PartialEq)]
         pub struct EverythingNull {
             pub bool_: Option<bool>,
             pub boolean_: Option<bool>,
@@ -4636,12 +4631,12 @@ pub mod queries {
             pub text_: Option<String>,
             pub varchar_: Option<String>,
             pub bytea_: Option<Vec<u8>>,
-            pub timestamp_: Option<time::PrimitiveDateTime>,
-            pub timestamp_without_time_zone_: Option<time::PrimitiveDateTime>,
-            pub timestamptz_: Option<time::OffsetDateTime>,
-            pub timestamp_with_time_zone_: Option<time::OffsetDateTime>,
-            pub date_: Option<time::Date>,
-            pub time_: Option<time::Time>,
+            pub timestamp_: Option<chrono::NaiveDateTime>,
+            pub timestamp_without_time_zone_: Option<chrono::NaiveDateTime>,
+            pub timestamptz_: Option<chrono::DateTime<chrono::Utc>>,
+            pub timestamp_with_time_zone_: Option<chrono::DateTime<chrono::Utc>>,
+            pub date_: Option<chrono::NaiveDate>,
+            pub time_: Option<chrono::NaiveTime>,
             pub json_: Option<serde_json::Value>,
             pub jsonb_: Option<serde_json::Value>,
             pub uuid_: Option<uuid::Uuid>,
@@ -4672,12 +4667,12 @@ pub mod queries {
             pub text_: Option<&'a str>,
             pub varchar_: Option<&'a str>,
             pub bytea_: Option<&'a [u8]>,
-            pub timestamp_: Option<time::PrimitiveDateTime>,
-            pub timestamp_without_time_zone_: Option<time::PrimitiveDateTime>,
-            pub timestamptz_: Option<time::OffsetDateTime>,
-            pub timestamp_with_time_zone_: Option<time::OffsetDateTime>,
-            pub date_: Option<time::Date>,
-            pub time_: Option<time::Time>,
+            pub timestamp_: Option<chrono::NaiveDateTime>,
+            pub timestamp_without_time_zone_: Option<chrono::NaiveDateTime>,
+            pub timestamptz_: Option<chrono::DateTime<chrono::Utc>>,
+            pub timestamp_with_time_zone_: Option<chrono::DateTime<chrono::Utc>>,
+            pub date_: Option<chrono::NaiveDate>,
+            pub time_: Option<chrono::NaiveTime>,
             pub json_: Option<postgres_types::Json<&'a serde_json::value::RawValue>>,
             pub jsonb_: Option<postgres_types::Json<&'a serde_json::value::RawValue>>,
             pub uuid_: Option<uuid::Uuid>,
@@ -4762,7 +4757,7 @@ pub mod queries {
                 }
             }
         }
-        #[derive(serde::Serialize, Debug, Clone, PartialEq)]
+        #[derive(Debug, Clone, PartialEq)]
         pub struct EverythingArray {
             pub bool_: Vec<bool>,
             pub boolean_: Vec<bool>,
@@ -4780,12 +4775,12 @@ pub mod queries {
             pub text_: Vec<String>,
             pub varchar_: Vec<String>,
             pub bytea_: Vec<Vec<u8>>,
-            pub timestamp_: Vec<time::PrimitiveDateTime>,
-            pub timestamp_without_time_zone_: Vec<time::PrimitiveDateTime>,
-            pub timestamptz_: Vec<time::OffsetDateTime>,
-            pub timestamp_with_time_zone_: Vec<time::OffsetDateTime>,
-            pub date_: Vec<time::Date>,
-            pub time_: Vec<time::Time>,
+            pub timestamp_: Vec<chrono::NaiveDateTime>,
+            pub timestamp_without_time_zone_: Vec<chrono::NaiveDateTime>,
+            pub timestamptz_: Vec<chrono::DateTime<chrono::Utc>>,
+            pub timestamp_with_time_zone_: Vec<chrono::DateTime<chrono::Utc>>,
+            pub date_: Vec<chrono::NaiveDate>,
+            pub time_: Vec<chrono::NaiveTime>,
             pub json_: Vec<serde_json::Value>,
             pub jsonb_: Vec<serde_json::Value>,
             pub uuid_: Vec<uuid::Uuid>,
@@ -4810,14 +4805,14 @@ pub mod queries {
             pub text_: cornucopia_async::ArrayIterator<'a, &'a str>,
             pub varchar_: cornucopia_async::ArrayIterator<'a, &'a str>,
             pub bytea_: cornucopia_async::ArrayIterator<'a, &'a [u8]>,
-            pub timestamp_: cornucopia_async::ArrayIterator<'a, time::PrimitiveDateTime>,
+            pub timestamp_: cornucopia_async::ArrayIterator<'a, chrono::NaiveDateTime>,
             pub timestamp_without_time_zone_:
-                cornucopia_async::ArrayIterator<'a, time::PrimitiveDateTime>,
-            pub timestamptz_: cornucopia_async::ArrayIterator<'a, time::OffsetDateTime>,
+                cornucopia_async::ArrayIterator<'a, chrono::NaiveDateTime>,
+            pub timestamptz_: cornucopia_async::ArrayIterator<'a, chrono::DateTime<chrono::Utc>>,
             pub timestamp_with_time_zone_:
-                cornucopia_async::ArrayIterator<'a, time::OffsetDateTime>,
-            pub date_: cornucopia_async::ArrayIterator<'a, time::Date>,
-            pub time_: cornucopia_async::ArrayIterator<'a, time::Time>,
+                cornucopia_async::ArrayIterator<'a, chrono::DateTime<chrono::Utc>>,
+            pub date_: cornucopia_async::ArrayIterator<'a, chrono::NaiveDate>,
+            pub time_: cornucopia_async::ArrayIterator<'a, chrono::NaiveTime>,
             pub json_: cornucopia_async::ArrayIterator<
                 'a,
                 postgres_types::Json<&'a serde_json::value::RawValue>,
@@ -4900,7 +4895,7 @@ pub mod queries {
                 }
             }
         }
-        #[derive(serde::Serialize, Debug, Clone, PartialEq)]
+        #[derive(Debug, Clone, PartialEq)]
         pub struct EverythingArrayNull {
             pub bool_: Option<Vec<bool>>,
             pub boolean_: Option<Vec<bool>>,
@@ -4918,12 +4913,12 @@ pub mod queries {
             pub text_: Option<Vec<String>>,
             pub varchar_: Option<Vec<String>>,
             pub bytea_: Option<Vec<Vec<u8>>>,
-            pub timestamp_: Option<Vec<time::PrimitiveDateTime>>,
-            pub timestamp_without_time_zone_: Option<Vec<time::PrimitiveDateTime>>,
-            pub timestamptz_: Option<Vec<time::OffsetDateTime>>,
-            pub timestamp_with_time_zone_: Option<Vec<time::OffsetDateTime>>,
-            pub date_: Option<Vec<time::Date>>,
-            pub time_: Option<Vec<time::Time>>,
+            pub timestamp_: Option<Vec<chrono::NaiveDateTime>>,
+            pub timestamp_without_time_zone_: Option<Vec<chrono::NaiveDateTime>>,
+            pub timestamptz_: Option<Vec<chrono::DateTime<chrono::Utc>>>,
+            pub timestamp_with_time_zone_: Option<Vec<chrono::DateTime<chrono::Utc>>>,
+            pub date_: Option<Vec<chrono::NaiveDate>>,
+            pub time_: Option<Vec<chrono::NaiveTime>>,
             pub json_: Option<Vec<serde_json::Value>>,
             pub jsonb_: Option<Vec<serde_json::Value>>,
             pub uuid_: Option<Vec<uuid::Uuid>>,
@@ -4948,14 +4943,15 @@ pub mod queries {
             pub text_: Option<cornucopia_async::ArrayIterator<'a, &'a str>>,
             pub varchar_: Option<cornucopia_async::ArrayIterator<'a, &'a str>>,
             pub bytea_: Option<cornucopia_async::ArrayIterator<'a, &'a [u8]>>,
-            pub timestamp_: Option<cornucopia_async::ArrayIterator<'a, time::PrimitiveDateTime>>,
+            pub timestamp_: Option<cornucopia_async::ArrayIterator<'a, chrono::NaiveDateTime>>,
             pub timestamp_without_time_zone_:
-                Option<cornucopia_async::ArrayIterator<'a, time::PrimitiveDateTime>>,
-            pub timestamptz_: Option<cornucopia_async::ArrayIterator<'a, time::OffsetDateTime>>,
+                Option<cornucopia_async::ArrayIterator<'a, chrono::NaiveDateTime>>,
+            pub timestamptz_:
+                Option<cornucopia_async::ArrayIterator<'a, chrono::DateTime<chrono::Utc>>>,
             pub timestamp_with_time_zone_:
-                Option<cornucopia_async::ArrayIterator<'a, time::OffsetDateTime>>,
-            pub date_: Option<cornucopia_async::ArrayIterator<'a, time::Date>>,
-            pub time_: Option<cornucopia_async::ArrayIterator<'a, time::Time>>,
+                Option<cornucopia_async::ArrayIterator<'a, chrono::DateTime<chrono::Utc>>>,
+            pub date_: Option<cornucopia_async::ArrayIterator<'a, chrono::NaiveDate>>,
+            pub time_: Option<cornucopia_async::ArrayIterator<'a, chrono::NaiveTime>>,
             pub json_: Option<
                 cornucopia_async::ArrayIterator<
                     'a,
@@ -5542,12 +5538,12 @@ FROM
                     text_: &'a T1,
                     varchar_: &'a T2,
                     bytea_: &'a T3,
-                    timestamp_: &'a time::PrimitiveDateTime,
-                    timestamp_without_time_zone_: &'a time::PrimitiveDateTime,
-                    timestamptz_: &'a time::OffsetDateTime,
-                    timestamp_with_time_zone_: &'a time::OffsetDateTime,
-                    date_: &'a time::Date,
-                    time_: &'a time::Time,
+                    timestamp_: &'a chrono::NaiveDateTime,
+                    timestamp_without_time_zone_: &'a chrono::NaiveDateTime,
+                    timestamptz_: &'a chrono::DateTime<chrono::Utc>,
+                    timestamp_with_time_zone_: &'a chrono::DateTime<chrono::Utc>,
+                    date_: &'a chrono::NaiveDate,
+                    time_: &'a chrono::NaiveTime,
                     json_: &'a T4,
                     jsonb_: &'a T5,
                     uuid_: &'a uuid::Uuid,
@@ -5814,12 +5810,12 @@ FROM
                     T17: cornucopia_sync::ArraySql<Item = T16>,
                     T18: cornucopia_sync::BytesSql,
                     T19: cornucopia_sync::ArraySql<Item = T18>,
-                    T20: cornucopia_sync::ArraySql<Item = time::PrimitiveDateTime>,
-                    T21: cornucopia_sync::ArraySql<Item = time::PrimitiveDateTime>,
-                    T22: cornucopia_sync::ArraySql<Item = time::OffsetDateTime>,
-                    T23: cornucopia_sync::ArraySql<Item = time::OffsetDateTime>,
-                    T24: cornucopia_sync::ArraySql<Item = time::Date>,
-                    T25: cornucopia_sync::ArraySql<Item = time::Time>,
+                    T20: cornucopia_sync::ArraySql<Item = chrono::NaiveDateTime>,
+                    T21: cornucopia_sync::ArraySql<Item = chrono::NaiveDateTime>,
+                    T22: cornucopia_sync::ArraySql<Item = chrono::DateTime<chrono::Utc>>,
+                    T23: cornucopia_sync::ArraySql<Item = chrono::DateTime<chrono::Utc>>,
+                    T24: cornucopia_sync::ArraySql<Item = chrono::NaiveDate>,
+                    T25: cornucopia_sync::ArraySql<Item = chrono::NaiveTime>,
                     T26: cornucopia_sync::JsonSql,
                     T27: cornucopia_sync::ArraySql<Item = T26>,
                     T28: cornucopia_sync::JsonSql,
@@ -5917,12 +5913,12 @@ FROM
                     T17: cornucopia_sync::ArraySql<Item = T16>,
                     T18: cornucopia_sync::BytesSql,
                     T19: cornucopia_sync::ArraySql<Item = T18>,
-                    T20: cornucopia_sync::ArraySql<Item = time::PrimitiveDateTime>,
-                    T21: cornucopia_sync::ArraySql<Item = time::PrimitiveDateTime>,
-                    T22: cornucopia_sync::ArraySql<Item = time::OffsetDateTime>,
-                    T23: cornucopia_sync::ArraySql<Item = time::OffsetDateTime>,
-                    T24: cornucopia_sync::ArraySql<Item = time::Date>,
-                    T25: cornucopia_sync::ArraySql<Item = time::Time>,
+                    T20: cornucopia_sync::ArraySql<Item = chrono::NaiveDateTime>,
+                    T21: cornucopia_sync::ArraySql<Item = chrono::NaiveDateTime>,
+                    T22: cornucopia_sync::ArraySql<Item = chrono::DateTime<chrono::Utc>>,
+                    T23: cornucopia_sync::ArraySql<Item = chrono::DateTime<chrono::Utc>>,
+                    T24: cornucopia_sync::ArraySql<Item = chrono::NaiveDate>,
+                    T25: cornucopia_sync::ArraySql<Item = chrono::NaiveTime>,
                     T26: cornucopia_sync::JsonSql,
                     T27: cornucopia_sync::ArraySql<Item = T26>,
                     T28: cornucopia_sync::JsonSql,
@@ -6109,8 +6105,7 @@ FROM
         }
         pub mod async_ {
             use cornucopia_async::GenericClient;
-            use futures;
-            use futures::{StreamExt, TryStreamExt};
+            use futures_util::{StreamExt, TryStreamExt};
             pub struct EverythingQuery<'a, C: GenericClient, T, const N: usize> {
                 client: &'a C,
                 params: [&'a (dyn postgres_types::ToSql + Sync); N],
@@ -6162,7 +6157,7 @@ FROM
                 pub async fn iter(
                     self,
                 ) -> Result<
-                    impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
+                    impl futures_util::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
                     tokio_postgres::Error,
                 > {
                     let stream = cornucopia_async::private::raw(
@@ -6229,7 +6224,7 @@ FROM
                 pub async fn iter(
                     self,
                 ) -> Result<
-                    impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
+                    impl futures_util::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
                     tokio_postgres::Error,
                 > {
                     let stream = cornucopia_async::private::raw(
@@ -6296,7 +6291,7 @@ FROM
                 pub async fn iter(
                     self,
                 ) -> Result<
-                    impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
+                    impl futures_util::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
                     tokio_postgres::Error,
                 > {
                     let stream = cornucopia_async::private::raw(
@@ -6363,7 +6358,7 @@ FROM
                 pub async fn iter(
                     self,
                 ) -> Result<
-                    impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
+                    impl futures_util::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
                     tokio_postgres::Error,
                 > {
                     let stream = cornucopia_async::private::raw(
@@ -6433,7 +6428,7 @@ FROM
                 pub async fn iter(
                     self,
                 ) -> Result<
-                    impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
+                    impl futures_util::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
                     tokio_postgres::Error,
                 > {
                     let stream = cornucopia_async::private::raw(
@@ -6629,12 +6624,12 @@ FROM
                     text_: &'a T1,
                     varchar_: &'a T2,
                     bytea_: &'a T3,
-                    timestamp_: &'a time::PrimitiveDateTime,
-                    timestamp_without_time_zone_: &'a time::PrimitiveDateTime,
-                    timestamptz_: &'a time::OffsetDateTime,
-                    timestamp_with_time_zone_: &'a time::OffsetDateTime,
-                    date_: &'a time::Date,
-                    time_: &'a time::Time,
+                    timestamp_: &'a chrono::NaiveDateTime,
+                    timestamp_without_time_zone_: &'a chrono::NaiveDateTime,
+                    timestamptz_: &'a chrono::DateTime<chrono::Utc>,
+                    timestamp_with_time_zone_: &'a chrono::DateTime<chrono::Utc>,
+                    date_: &'a chrono::NaiveDate,
+                    time_: &'a chrono::NaiveTime,
                     json_: &'a T4,
                     jsonb_: &'a T5,
                     uuid_: &'a uuid::Uuid,
@@ -6699,7 +6694,7 @@ FROM
                     super::EverythingParams<T1, T2, T3, T4, T5>,
                     std::pin::Pin<
                         Box<
-                            dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                            dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                                 + Send
                                 + 'a,
                         >,
@@ -6713,7 +6708,7 @@ FROM
                     params: &'a super::EverythingParams<T1, T2, T3, T4, T5>,
                 ) -> std::pin::Pin<
                     Box<
-                        dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                        dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                             + Send
                             + 'a,
                     >,
@@ -6918,12 +6913,12 @@ FROM
                     T17: cornucopia_async::ArraySql<Item = T16>,
                     T18: cornucopia_async::BytesSql,
                     T19: cornucopia_async::ArraySql<Item = T18>,
-                    T20: cornucopia_async::ArraySql<Item = time::PrimitiveDateTime>,
-                    T21: cornucopia_async::ArraySql<Item = time::PrimitiveDateTime>,
-                    T22: cornucopia_async::ArraySql<Item = time::OffsetDateTime>,
-                    T23: cornucopia_async::ArraySql<Item = time::OffsetDateTime>,
-                    T24: cornucopia_async::ArraySql<Item = time::Date>,
-                    T25: cornucopia_async::ArraySql<Item = time::Time>,
+                    T20: cornucopia_async::ArraySql<Item = chrono::NaiveDateTime>,
+                    T21: cornucopia_async::ArraySql<Item = chrono::NaiveDateTime>,
+                    T22: cornucopia_async::ArraySql<Item = chrono::DateTime<chrono::Utc>>,
+                    T23: cornucopia_async::ArraySql<Item = chrono::DateTime<chrono::Utc>>,
+                    T24: cornucopia_async::ArraySql<Item = chrono::NaiveDate>,
+                    T25: cornucopia_async::ArraySql<Item = chrono::NaiveTime>,
                     T26: cornucopia_async::JsonSql,
                     T27: cornucopia_async::ArraySql<Item = T26>,
                     T28: cornucopia_async::JsonSql,
@@ -7023,12 +7018,12 @@ FROM
                     T17: cornucopia_async::ArraySql<Item = T16>,
                     T18: cornucopia_async::BytesSql,
                     T19: cornucopia_async::ArraySql<Item = T18>,
-                    T20: cornucopia_async::ArraySql<Item = time::PrimitiveDateTime>,
-                    T21: cornucopia_async::ArraySql<Item = time::PrimitiveDateTime>,
-                    T22: cornucopia_async::ArraySql<Item = time::OffsetDateTime>,
-                    T23: cornucopia_async::ArraySql<Item = time::OffsetDateTime>,
-                    T24: cornucopia_async::ArraySql<Item = time::Date>,
-                    T25: cornucopia_async::ArraySql<Item = time::Time>,
+                    T20: cornucopia_async::ArraySql<Item = chrono::NaiveDateTime>,
+                    T21: cornucopia_async::ArraySql<Item = chrono::NaiveDateTime>,
+                    T22: cornucopia_async::ArraySql<Item = chrono::DateTime<chrono::Utc>>,
+                    T23: cornucopia_async::ArraySql<Item = chrono::DateTime<chrono::Utc>>,
+                    T24: cornucopia_async::ArraySql<Item = chrono::NaiveDate>,
+                    T25: cornucopia_async::ArraySql<Item = chrono::NaiveTime>,
                     T26: cornucopia_async::JsonSql,
                     T27: cornucopia_async::ArraySql<Item = T26>,
                     T28: cornucopia_async::JsonSql,
@@ -7077,7 +7072,7 @@ FROM
                     >,
                     std::pin::Pin<
                         Box<
-                            dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                            dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                                 + Send
                                 + 'a,
                         >,
@@ -7125,7 +7120,7 @@ FROM
                     >,
                 ) -> std::pin::Pin<
                     Box<
-                        dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                        dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                             + Send
                             + 'a,
                     >,
@@ -7297,15 +7292,15 @@ FROM
             pub r#async: super::super::types::public::SyntaxComposite,
             pub r#enum: super::super::types::public::SyntaxEnum,
         }
-        #[derive(serde::Serialize, Debug, Clone, PartialEq, Copy)]
+        #[derive(Debug, Clone, PartialEq, Copy)]
         pub struct Row {
             pub id: i32,
         }
-        #[derive(serde::Serialize, Debug, Clone, PartialEq, Copy)]
+        #[derive(Debug, Clone, PartialEq, Copy)]
         pub struct RowSpace {
             pub id: i32,
         }
-        #[derive(serde::Serialize, Debug, Clone, PartialEq)]
+        #[derive(Debug, Clone, PartialEq)]
         pub struct Typeof {
             pub trick_y: String,
             pub r#async: super::super::types::public::SyntaxComposite,
@@ -8286,8 +8281,7 @@ FROM
         }
         pub mod async_ {
             use cornucopia_async::GenericClient;
-            use futures;
-            use futures::{StreamExt, TryStreamExt};
+            use futures_util::{StreamExt, TryStreamExt};
             pub struct PublicCloneCompositeQuery<'a, C: GenericClient, T, const N: usize> {
                 client: &'a C,
                 params: [&'a (dyn postgres_types::ToSql + Sync); N],
@@ -8342,7 +8336,7 @@ FROM
                 pub async fn iter(
                     self,
                 ) -> Result<
-                    impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
+                    impl futures_util::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
                     tokio_postgres::Error,
                 > {
                     let stream = cornucopia_async::private::raw(
@@ -8406,7 +8400,7 @@ FROM
                 pub async fn iter(
                     self,
                 ) -> Result<
-                    impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
+                    impl futures_util::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
                     tokio_postgres::Error,
                 > {
                     let stream = cornucopia_async::private::raw(
@@ -8470,7 +8464,7 @@ FROM
                 pub async fn iter(
                     self,
                 ) -> Result<
-                    impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
+                    impl futures_util::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
                     tokio_postgres::Error,
                 > {
                     let stream = cornucopia_async::private::raw(
@@ -8537,7 +8531,7 @@ FROM
                 pub async fn iter(
                     self,
                 ) -> Result<
-                    impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
+                    impl futures_util::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
                     tokio_postgres::Error,
                 > {
                     let stream = cornucopia_async::private::raw(
@@ -8604,7 +8598,7 @@ FROM
                 pub async fn iter(
                     self,
                 ) -> Result<
-                    impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
+                    impl futures_util::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
                     tokio_postgres::Error,
                 > {
                     let stream = cornucopia_async::private::raw(
@@ -8893,7 +8887,7 @@ FROM
                     super::TrickySqlParams,
                     std::pin::Pin<
                         Box<
-                            dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                            dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                                 + Send
                                 + 'a,
                         >,
@@ -8907,7 +8901,7 @@ FROM
                     params: &'a super::TrickySqlParams,
                 ) -> std::pin::Pin<
                     Box<
-                        dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                        dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                             + Send
                             + 'a,
                     >,
@@ -8942,7 +8936,7 @@ FROM
                     super::TrickySql1Params,
                     std::pin::Pin<
                         Box<
-                            dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                            dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                                 + Send
                                 + 'a,
                         >,
@@ -8956,7 +8950,7 @@ FROM
                     params: &'a super::TrickySql1Params,
                 ) -> std::pin::Pin<
                     Box<
-                        dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                        dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                             + Send
                             + 'a,
                     >,
@@ -8991,7 +8985,7 @@ FROM
                     super::TrickySql2Params,
                     std::pin::Pin<
                         Box<
-                            dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                            dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                                 + Send
                                 + 'a,
                         >,
@@ -9005,7 +8999,7 @@ FROM
                     params: &'a super::TrickySql2Params,
                 ) -> std::pin::Pin<
                     Box<
-                        dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                        dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                             + Send
                             + 'a,
                     >,
@@ -9040,7 +9034,7 @@ FROM
                     super::TrickySql3Params,
                     std::pin::Pin<
                         Box<
-                            dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                            dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                                 + Send
                                 + 'a,
                         >,
@@ -9054,7 +9048,7 @@ FROM
                     params: &'a super::TrickySql3Params,
                 ) -> std::pin::Pin<
                     Box<
-                        dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                        dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                             + Send
                             + 'a,
                     >,
@@ -9089,7 +9083,7 @@ FROM
                     super::TrickySql4Params,
                     std::pin::Pin<
                         Box<
-                            dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                            dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                                 + Send
                                 + 'a,
                         >,
@@ -9103,7 +9097,7 @@ FROM
                     params: &'a super::TrickySql4Params,
                 ) -> std::pin::Pin<
                     Box<
-                        dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                        dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                             + Send
                             + 'a,
                     >,
@@ -9138,7 +9132,7 @@ FROM
                     super::TrickySql6Params,
                     std::pin::Pin<
                         Box<
-                            dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                            dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                                 + Send
                                 + 'a,
                         >,
@@ -9152,7 +9146,7 @@ FROM
                     params: &'a super::TrickySql6Params,
                 ) -> std::pin::Pin<
                     Box<
-                        dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                        dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                             + Send
                             + 'a,
                     >,
@@ -9187,7 +9181,7 @@ FROM
                     super::TrickySql7Params,
                     std::pin::Pin<
                         Box<
-                            dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                            dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                                 + Send
                                 + 'a,
                         >,
@@ -9201,7 +9195,7 @@ FROM
                     params: &'a super::TrickySql7Params,
                 ) -> std::pin::Pin<
                     Box<
-                        dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                        dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                             + Send
                             + 'a,
                     >,
@@ -9236,7 +9230,7 @@ FROM
                     super::TrickySql8Params,
                     std::pin::Pin<
                         Box<
-                            dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                            dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                                 + Send
                                 + 'a,
                         >,
@@ -9250,7 +9244,7 @@ FROM
                     params: &'a super::TrickySql8Params,
                 ) -> std::pin::Pin<
                     Box<
-                        dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                        dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                             + Send
                             + 'a,
                     >,
@@ -9285,7 +9279,7 @@ FROM
                     super::TrickySql9Params,
                     std::pin::Pin<
                         Box<
-                            dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                            dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                                 + Send
                                 + 'a,
                         >,
@@ -9299,7 +9293,7 @@ FROM
                     params: &'a super::TrickySql9Params,
                 ) -> std::pin::Pin<
                     Box<
-                        dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                        dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                             + Send
                             + 'a,
                     >,
@@ -9334,7 +9328,7 @@ FROM
                     super::TrickySql10Params,
                     std::pin::Pin<
                         Box<
-                            dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                            dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                                 + Send
                                 + 'a,
                         >,
@@ -9348,7 +9342,7 @@ FROM
                     params: &'a super::TrickySql10Params,
                 ) -> std::pin::Pin<
                     Box<
-                        dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                        dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                             + Send
                             + 'a,
                     >,

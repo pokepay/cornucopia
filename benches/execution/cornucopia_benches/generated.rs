@@ -626,8 +626,7 @@ pub mod queries {
         }
         pub mod async_ {
             use cornucopia_async::GenericClient;
-            use futures;
-            use futures::{StreamExt, TryStreamExt};
+            use futures_util::{StreamExt, TryStreamExt};
             pub struct UserQuery<'a, C: GenericClient, T, const N: usize> {
                 client: &'a C,
                 params: [&'a (dyn postgres_types::ToSql + Sync); N],
@@ -679,7 +678,7 @@ pub mod queries {
                 pub async fn iter(
                     self,
                 ) -> Result<
-                    impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
+                    impl futures_util::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
                     tokio_postgres::Error,
                 > {
                     let stream = cornucopia_async::private::raw(
@@ -746,7 +745,7 @@ pub mod queries {
                 pub async fn iter(
                     self,
                 ) -> Result<
-                    impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
+                    impl futures_util::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
                     tokio_postgres::Error,
                 > {
                     let stream = cornucopia_async::private::raw(
@@ -813,7 +812,7 @@ pub mod queries {
                 pub async fn iter(
                     self,
                 ) -> Result<
-                    impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
+                    impl futures_util::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
                     tokio_postgres::Error,
                 > {
                     let stream = cornucopia_async::private::raw(
@@ -880,7 +879,7 @@ pub mod queries {
                 pub async fn iter(
                     self,
                 ) -> Result<
-                    impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
+                    impl futures_util::Stream<Item = Result<T, tokio_postgres::Error>> + 'a,
                     tokio_postgres::Error,
                 > {
                     let stream = cornucopia_async::private::raw(
@@ -963,7 +962,7 @@ pub mod queries {
                     super::InsertUserParams<T1, T2>,
                     std::pin::Pin<
                         Box<
-                            dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                            dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                                 + Send
                                 + 'a,
                         >,
@@ -977,7 +976,7 @@ pub mod queries {
                     params: &'a super::InsertUserParams<T1, T2>,
                 ) -> std::pin::Pin<
                     Box<
-                        dyn futures::Future<Output = Result<u64, tokio_postgres::Error>>
+                        dyn futures_util::Future<Output = Result<u64, tokio_postgres::Error>>
                             + Send
                             + 'a,
                     >,
