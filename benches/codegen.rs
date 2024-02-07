@@ -17,6 +17,7 @@ fn bench(c: &mut Criterion) {
                     gen_sync: true,
                     gen_async: false,
                     derive_serde: true,
+                    rustfmt: true,
                 },
             )
             .unwrap()
@@ -32,6 +33,7 @@ fn bench(c: &mut Criterion) {
                     gen_sync: true,
                     gen_async: false,
                     derive_serde: true,
+                    rustfmt: true,
                 },
             )
             .unwrap()

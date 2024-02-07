@@ -61,6 +61,8 @@ pub(crate) struct CodegenTest {
     pub(crate) derive_serde: bool,
     #[serde(default)]
     pub(crate) run: bool,
+    #[serde(default)]
+    pub(crate) rustfmt: bool,
 }
 
 fn default_queries_path() -> PathBuf {
@@ -77,6 +79,7 @@ impl From<&CodegenTest> for CodegenSettings {
             gen_async: codegen_test.r#async || !codegen_test.sync,
             gen_sync: codegen_test.sync,
             derive_serde: codegen_test.derive_serde,
+            rustfmt: codegen_test.rustfmt,
         }
     }
 }
@@ -96,6 +99,7 @@ impl From<&ErrorTest> for CodegenSettings {
             derive_serde: false,
             gen_async: false,
             gen_sync: true,
+            rustfmt: true,
         }
     }
 }

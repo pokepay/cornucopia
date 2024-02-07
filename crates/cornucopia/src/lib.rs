@@ -14,8 +14,6 @@ pub mod conn;
 /// High-level interfaces to work with Cornucopia's container manager.
 pub mod container;
 
-use std::path::Path;
-
 use postgres::Client;
 
 use codegen::{generate as generate_internal, GeneratedFileTree};
@@ -23,6 +21,10 @@ use error::WriteOutputError;
 use parser::parse_query_module;
 use prepare_queries::prepare;
 use read_queries::read_query_modules;
+use std::{
+    path::{Path, PathBuf},
+    process::Command,
+};
 
 #[doc(hidden)]
 pub use cli::run;
@@ -36,6 +38,7 @@ pub struct CodegenSettings {
     pub gen_async: bool,
     pub gen_sync: bool,
     pub derive_serde: bool,
+    pub rustfmt: bool,
 }
 
 /// Generates Rust queries from PostgreSQL queries located at `queries_path`,
@@ -58,7 +61,7 @@ pub fn generate_live<P: AsRef<Path>>(
     let generated_tree = generate_internal(prepared_modules, settings);
     // Write
     if let Some(d) = destination {
-        write_generated_code(d.as_ref(), &generated_tree)?;
+        write_generated_code(d.as_ref(), &generated_tree, &settings)?;
     };
 
     Ok(())
@@ -98,7 +101,7 @@ pub fn generate_managed<P: AsRef<Path>>(
     container::cleanup(podman)?;
 
     if let Some(destination) = destination {
-        write_generated_code(destination.as_ref(), &generated_tree)?;
+        write_generated_code(destination.as_ref(), &generated_tree, &settings)?;
     };
 
     Ok(())
@@ -107,6 +110,7 @@ pub fn generate_managed<P: AsRef<Path>>(
 fn write_generated_code(
     destination: &Path,
     generated_tree: &GeneratedFileTree,
+    settings: &CodegenSettings,
 ) -> Result<(), Error> {
     use std::io::Write;
     // clean dir
@@ -132,5 +136,22 @@ fn write_generated_code(
                 file_path: destination.to_owned(),
             })?;
     }
+    if settings.rustfmt {
+        rustfmt_dir(destination);
+    }
     Ok(())
+}
+
+fn rustfmt_dir(dir: &Path) {
+    let glob_path = format!("{}/**/*.rs", dir.display());
+    let files: Vec<PathBuf> = glob::glob(&glob_path)
+        .expect("Failed to read glob pattern")
+        .filter_map(|ent| ent.ok())
+        .collect();
+
+    Command::new("rustfmt")
+        .args(["--edition", "2021"])
+        .args(files)
+        .output()
+        .unwrap();
 }

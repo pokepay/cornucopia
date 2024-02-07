@@ -28,6 +28,9 @@ struct Args {
     /// Derive serde's `Serialize` trait for generated types.
     #[clap(long)]
     serde: bool,
+    /// Rustfmt generated modules
+    #[clap(long)]
+    rustfmt: bool,
 }
 
 #[derive(Debug, Subcommand)]
@@ -54,12 +57,14 @@ pub fn run() -> Result<(), Error> {
         sync,
         r#async,
         serde,
+        rustfmt,
     } = Args::parse();
 
     let settings = CodegenSettings {
         gen_async: r#async || !sync,
         gen_sync: sync,
         derive_serde: serde,
+        rustfmt,
     };
 
     match action {

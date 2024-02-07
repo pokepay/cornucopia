@@ -471,6 +471,7 @@ dependencies = [
  "chumsky",
  "clap",
  "codegen_template",
+ "glob",
  "heck",
  "indexmap",
  "miette",
