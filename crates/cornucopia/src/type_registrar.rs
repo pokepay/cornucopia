@@ -394,6 +394,7 @@ impl TypeRegistrar {
                     Type::JSON | Type::JSONB => ("serde_json::Value", false),
                     Type::UUID => ("uuid::Uuid", true),
                     Type::INET => ("std::net::IpAddr", true),
+                    Type::CIDR => ("cidr::IpCidr", true),
                     Type::MACADDR => ("eui48::MacAddress", true),
                     Type::NUMERIC => ("rust_decimal::Decimal", true),
                     _ => {
