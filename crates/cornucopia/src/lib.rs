@@ -18,7 +18,7 @@ use std::path::Path;
 
 use postgres::Client;
 
-use codegen::generate as generate_internal;
+use codegen::{generate as generate_internal, GeneratedFileTree};
 use error::WriteOutputError;
 use parser::parse_query_module;
 use prepare_queries::prepare;
@@ -47,7 +47,7 @@ pub fn generate_live<P: AsRef<Path>>(
     queries_path: P,
     destination: Option<P>,
     settings: CodegenSettings,
-) -> Result<String, Error> {
+) -> Result<(), Error> {
     // Read
     let modules = read_query_modules(queries_path.as_ref())?
         .into_iter()
@@ -55,13 +55,13 @@ pub fn generate_live<P: AsRef<Path>>(
         .collect::<Result<_, parser::error::Error>>()?;
     // Generate
     let prepared_modules = prepare(client, modules)?;
-    let generated_code = generate_internal(prepared_modules, settings);
+    let generated_tree = generate_internal(prepared_modules, settings);
     // Write
     if let Some(d) = destination {
-        write_generated_code(d.as_ref(), &generated_code)?;
+        write_generated_code(d.as_ref(), &generated_tree)?;
     };
 
-    Ok(generated_code)
+    Ok(())
 }
 
 /// Generates Rust queries from PostgreSQL queries located at `queries_path`, using
@@ -77,7 +77,7 @@ pub fn generate_managed<P: AsRef<Path>>(
     destination: Option<P>,
     podman: bool,
     settings: CodegenSettings,
-) -> Result<String, Error> {
+) -> Result<(), Error> {
     // Read
     let modules = read_query_modules(queries_path.as_ref())?
         .into_iter()
@@ -90,7 +90,7 @@ pub fn generate_managed<P: AsRef<Path>>(
         // should be cut the connection here.
         // because the schema file may set the search_path.
     }
-    let generated_code = {
+    let generated_tree = {
         let mut client = conn::cornucopia_conn()?;
         let prepared_modules = prepare(&mut client, modules)?;
         generate_internal(prepared_modules, settings)
@@ -98,17 +98,39 @@ pub fn generate_managed<P: AsRef<Path>>(
     container::cleanup(podman)?;
 
     if let Some(destination) = destination {
-        write_generated_code(destination.as_ref(), &generated_code)?;
+        write_generated_code(destination.as_ref(), &generated_tree)?;
     };
 
-    Ok(generated_code)
+    Ok(())
 }
 
-fn write_generated_code(destination: &Path, generated_code: &str) -> Result<(), Error> {
-    Ok(
-        std::fs::write(destination, generated_code).map_err(|err| WriteOutputError {
+fn write_generated_code(
+    destination: &Path,
+    generated_tree: &GeneratedFileTree,
+) -> Result<(), Error> {
+    use std::io::Write;
+    // clean dir
+    std::fs::remove_dir_all(destination).ok();
+    // loop files
+    for (path, body) in generated_tree.iter() {
+        let destination = destination.join(path);
+        if let Some(dir) = destination.parent() {
+            // ensure dir
+            std::fs::create_dir_all(dir).map_err(|err| WriteOutputError {
+                err,
+                file_path: dir.to_owned(),
+            })?;
+        }
+        // write file
+        let mut file = std::fs::File::create(&destination).map_err(|err| WriteOutputError {
             err,
             file_path: destination.to_owned(),
-        })?,
-    )
+        })?;
+        file.write_all(body.as_bytes())
+            .map_err(|err| WriteOutputError {
+                err,
+                file_path: destination.to_owned(),
+            })?;
+    }
+    Ok(())
 }

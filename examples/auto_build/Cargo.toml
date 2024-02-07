@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 # Cornucopia async client
-## If you're trying this example as a standalone crate, 
+## If you're trying this example as a standalone crate,
 ## replace the path with the latest current version
 cornucopia_async = { path = "../../crates/client_async" }
 
@@ -23,6 +23,6 @@ deadpool-postgres = "0.12.1"
 
 [build-dependencies]
 # Cornucopia library to automatically
-## If you're trying this example as a standalone crate, 
+## If you're trying this example as a standalone crate,
 ## replace the path with the latest current version
 cornucopia = { path = "../../crates/cornucopia" }

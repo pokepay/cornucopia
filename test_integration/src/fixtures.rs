@@ -68,7 +68,7 @@ fn default_queries_path() -> PathBuf {
 }
 
 fn default_destination_path() -> PathBuf {
-    PathBuf::from("src/cornucopia.rs")
+    PathBuf::from("src/gen/")
 }
 
 impl From<&CodegenTest> for CodegenSettings {

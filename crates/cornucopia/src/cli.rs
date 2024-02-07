@@ -15,7 +15,7 @@ struct Args {
     #[clap(short, long, default_value = "queries/")]
     queries_path: PathBuf,
     /// Destination folder for generated modules
-    #[clap(short, long, default_value = "src/cornucopia.rs")]
+    #[clap(short, long, default_value = "src/gen/")]
     destination: PathBuf,
     #[clap(subcommand)]
     action: Action,

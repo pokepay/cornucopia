@@ -164,10 +164,7 @@ pub fn bench_insert(b: &mut Bencher, conn: &mut PgConnection, size: usize) {
     };
     let insert = &insert;
 
-    b.iter(|| {
-        let insert = insert;
-        insert(conn)
-    })
+    b.iter(|| insert(conn))
 }
 
 pub fn loading_associations_sequentially(b: &mut Bencher, conn: &mut PgConnection) {

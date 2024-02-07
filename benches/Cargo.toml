@@ -16,6 +16,7 @@ criterion = { version = "0.5.1", features = ["html_reports"] }
 
 # async
 tokio = { version = "1.24.2", features = ["full"] }
+futures = "0.3.25"
 futures-util = "0.3.25"
 
 # rust-postgres interaction

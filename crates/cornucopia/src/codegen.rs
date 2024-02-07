@@ -12,6 +12,8 @@ use crate::{
     CodegenSettings,
 };
 
+const GENERATED_FILE_HEADER: &str = "// This file was generated with `cornucopia`. Do not modify.";
+
 pub struct GenCtx {
     // Current module depth
     pub depth: u8,
@@ -717,14 +719,25 @@ fn gen_custom_type(w: &mut impl Write, schema: &str, prepared: &PreparedType, ct
     }
 }
 
-fn gen_type_modules<W: Write>(
-    w: &mut W,
+fn gen_type_modules(
+    parent_body_w: &mut String,
+    tree: &mut GeneratedFileTree,
     prepared: &IndexMap<String, Vec<PreparedType>>,
     ctx: &GenCtx,
 ) {
+    if prepared.is_empty() {
+        return;
+    }
+
+    parent_body_w.push_str("pub mod types;\n");
+
+    let types_file = "types.rs".to_owned();
+    let mut types_body = format!("{GENERATED_FILE_HEADER}\n\n");
+    let w = &mut types_body;
+
     let modules = prepared.iter().map(|(schema, types)| {
-        move |w: &mut W| {
-            let lazy = |w: &mut W| {
+        move |w: &mut String| {
+            let lazy = |w: &mut String| {
                 for ty in types {
                     gen_custom_type(w, schema, ty, ctx)
                 }
@@ -736,104 +749,140 @@ fn gen_type_modules<W: Write>(
             });
         }
     });
+
     code!(w =>
-        #[allow(clippy::all, clippy::pedantic)]
-        #[allow(unused_variables)]
-        #[allow(unused_imports)]
-        #[allow(dead_code)]
-        pub mod types {
-            $($!modules)
-        }
+          #![allow(clippy::all, clippy::pedantic)]
+          #![allow(unused_variables)]
+          #![allow(unused_imports)]
+          #![allow(dead_code)]
+
+
+          $($!modules)
     );
+
+    tree.push((types_file, types_body));
 }
 
-pub(crate) fn generate(preparation: Preparation, settings: CodegenSettings) -> String {
-    let mut buff = "// This file was generated with `cornucopia`. Do not modify.\n\n".to_string();
-    let w = &mut buff;
+fn gen_query_modules(
+    parent_body_w: &mut String,
+    tree: &mut GeneratedFileTree,
+    modules: &[PreparedModule],
+    settings: &CodegenSettings,
+) {
+    if modules.is_empty() {
+        return;
+    }
+
+    parent_body_w.push_str("pub mod queries;\n");
+
+    let query_root_file = "queries/mod.rs".to_owned();
+    let mut query_root_body = format!("{GENERATED_FILE_HEADER}\n\n");
+    let query_root_body_w = &mut query_root_body;
+
+    // Generate queries
+    for module in modules.iter() {
+        let name = &module.info.name;
+        let ctx = GenCtx::new(2, settings.gen_async, settings.derive_serde);
+        let params_string = module
+            .params
+            .values()
+            .map(|params| |w: &mut String| gen_params_struct(w, params, &ctx));
+        let rows_struct_string = module
+            .rows
+            .values()
+            .map(|row| |w: &mut String| gen_row_structs(w, row, &ctx));
+        let sync_specific = |w: &mut String| {
+            let gen_specific = |depth: u8, is_async: bool| {
+                move |w: &mut String| {
+                    let ctx = GenCtx::new(depth, is_async, settings.derive_serde);
+                    let import = if is_async {
+                        "use futures_util::{StreamExt, TryStreamExt}; use cornucopia_async::GenericClient;"
+                    } else {
+                        "use postgres::{fallible_iterator::FallibleIterator}; use cornucopia_sync::GenericClient;"
+                    };
+                    let rows_query_string = module
+                        .rows
+                        .values()
+                        .map(|row| |w: &mut String| gen_row_query(w, row, &ctx));
+                    let queries_string = module
+                        .queries
+                        .values()
+                        .map(|query| |w: &mut String| gen_query_fn(w, module, query, &ctx));
+                    code!(w =>
+                        $import
+                        $($!rows_query_string)
+                        $($!queries_string)
+                    )
+                }
+            };
+            if settings.gen_async != settings.gen_sync {
+                if settings.gen_async {
+                    let gen = gen_specific(2, true);
+                    code!(w => $!gen)
+                } else {
+                    let gen = gen_specific(2, false);
+                    code!(w => $!gen)
+                }
+            } else {
+                let sync = gen_specific(3, false);
+                let async_ = gen_specific(3, true);
+                code!(w =>
+                    pub mod sync {
+                        $!sync
+                    }
+                    pub mod async_ {
+                        $!async_
+                    }
+                )
+            }
+        };
+
+        query_root_body_w
+            .write_fmt(format_args!("pub mod {};\n", name))
+            .expect("write_fmt");
+
+        let query_file = format!("queries/{}.rs", name);
+        let mut query_body = format!("{GENERATED_FILE_HEADER}\n\n");
+        let w = &mut query_body;
+
+        code!(w =>
+              #![allow(clippy::all, clippy::pedantic)]
+              #![allow(unused_variables)]
+              #![allow(unused_imports)]
+              #![allow(dead_code)]
+
+
+              $($!params_string)
+              $($!rows_struct_string)
+              $!sync_specific
+        );
+
+        tree.push((query_file, query_body));
+    }
+
+    tree.push((query_root_file, query_root_body));
+}
+
+pub type GeneratedFileTree = Vec<(String, String)>;
+
+pub(crate) fn generate(preparation: Preparation, settings: CodegenSettings) -> GeneratedFileTree {
+    let mut tree: GeneratedFileTree = Vec::new();
+
+    let root_file = "mod.rs".to_owned();
+    let mut root_body = format!("{GENERATED_FILE_HEADER}\n\n");
+
     // Generate database type
     gen_type_modules(
-        w,
+        &mut root_body,
+        &mut tree,
         &preparation.types,
         &GenCtx::new(1, settings.gen_async, settings.derive_serde),
     );
-    // Generate queries
-    let query_modules = preparation.modules.iter().map(|module| {
-        move |w: &mut String| {
-            let name = &module.info.name;
-            let ctx = GenCtx::new(2, settings.gen_async, settings.derive_serde);
-            let params_string = module
-                .params
-                .values()
-                .map(|params| |w: &mut String| gen_params_struct(w, params,  &ctx));
-            let rows_struct_string = module
-                .rows
-                .values()
-                .map(|row| |w: &mut String| gen_row_structs(w, row,  &ctx));
 
-            let sync_specific = |w: &mut String| {
-                let gen_specific = |depth: u8, is_async: bool| {
-                    move |w: &mut String| {
-                        let ctx = GenCtx::new(depth, is_async, settings.derive_serde);
-                        let import = if is_async {
-                            "use futures_util::{StreamExt, TryStreamExt}; use cornucopia_async::GenericClient;"
-                        } else {
-                            "use postgres::{fallible_iterator::FallibleIterator}; use cornucopia_sync::GenericClient;"
-                        };
-                        let rows_query_string = module
-                            .rows
-                            .values()
-                            .map(|row| |w: &mut String| gen_row_query(w, row, &ctx));
-                        let queries_string = module.queries.values().map(|query| {
-                            |w: &mut String| gen_query_fn(w, module, query, &ctx)
-                        });
-                        code!(w =>
-                            $import
-                            $($!rows_query_string)
-                            $($!queries_string)
-                        )
-                    }
-                };
+    // Generate database query
+    gen_query_modules(&mut root_body, &mut tree, &preparation.modules, &settings);
 
-                if settings.gen_async != settings.gen_sync {
-                    if settings.gen_async {
-                        let gen =  gen_specific(2, true);
-                        code!(w => $!gen)
-                    } else {
-                        let gen =  gen_specific(2, false);
-                        code!(w => $!gen)
-                    }
-                } else {
-                    let sync = gen_specific(3, false);
-                    let async_ = gen_specific(3, true);
-                    code!(w =>
-                        pub mod sync {
-                            $!sync
-                        }
-                        pub mod async_ {
-                            $!async_
-                        }
-                    )
+    tree.push((root_file, root_body));
 
-                }
-            };
-
-            code!(w =>
-                pub mod $name {
-                    $($!params_string)
-                    $($!rows_struct_string)
-                    $!sync_specific
-                }
-            );
-        }
-    });
-    code!(w =>
-        #[allow(clippy::all, clippy::pedantic)]
-        #[allow(unused_variables)]
-        #[allow(unused_imports)]
-        #[allow(dead_code)]
-        pub mod queries {
-            $($!query_modules)
-        }
-    );
-    buff
+    tree
 }

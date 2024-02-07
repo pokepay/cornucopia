@@ -1,6 +1,6 @@
 use crate::{
     fixtures::{CodegenTest, TestSuite},
-    utils::{reset_db, rustfmt_file, rustfmt_string},
+    utils::{reset_db, rustfmt_dir},
 };
 
 use cornucopia::{CodegenSettings, Error};
@@ -40,29 +40,38 @@ pub(crate) fn run_codegen_test(
                     CodegenSettings::from(&test),
                 )
                 .map_err(Error::report)?;
-                // Format the generated file
-                rustfmt_file(&test.destination);
+                // Format the generated dir
+                rustfmt_dir(&test.destination);
             } else {
-                // Get currently checked-in generate file
-                let old_codegen = std::fs::read_to_string(&test.destination).unwrap();
-                // Generate new file
-                let new_codegen = cornucopia::generate_live(
+                let temp = std::env::temp_dir().join(&test.destination);
+
+                cornucopia::generate_live(
                     client,
                     &test.queries_path,
-                    None,
+                    Some(&temp),
                     CodegenSettings::from(&test),
                 )
                 .map_err(Error::report)?;
-                // Format the generated code string by piping to rustfmt
-                let new_codegen_formatted = rustfmt_string(&new_codegen);
 
-                // If the newly generated file differs from
-                // the currently checked in one, return an error.
-                if old_codegen != new_codegen_formatted {
+                // Format the generated dir
+                rustfmt_dir(&temp);
+
+                let result =
+                    folder_compare::FolderCompare::new(&test.destination, &temp, &Vec::new())
+                        .unwrap();
+
+                let changed_files = result.changed_files;
+                let new_files = result.new_files;
+
+                if !changed_files.is_empty() {
                     Err(format!(
-                        "\"{}\" is outdated",
-                        test.destination.to_str().unwrap()
+                        "\"{}\" is changed",
+                        changed_files[0].to_str().unwrap()
                     ))?;
+                }
+
+                if !new_files.is_empty() {
+                    Err(format!("\"{}\" is new", new_files[0].to_str().unwrap()))?;
                 }
             }
             println!("(generate) {} {}", test.name, "OK".green());

@@ -16,7 +16,7 @@ fn bench(c: &mut Criterion) {
                 CodegenSettings {
                     gen_sync: true,
                     gen_async: false,
-                    derive_ser: true,
+                    derive_serde: true,
                 },
             )
             .unwrap()
@@ -31,7 +31,7 @@ fn bench(c: &mut Criterion) {
                 CodegenSettings {
                     gen_sync: true,
                     gen_async: false,
-                    derive_ser: true,
+                    derive_serde: true,
                 },
             )
             .unwrap()

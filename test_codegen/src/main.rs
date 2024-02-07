@@ -1,4 +1,4 @@
-mod cornucopia;
+mod gen;
 
 use ::cornucopia_sync::IterSql;
 
@@ -14,7 +14,7 @@ use std::{
 };
 use uuid::Uuid;
 
-use crate::cornucopia::{
+use crate::gen::{
     queries::{
         copy::sync::{insert_clone, insert_copy, select_copy},
         domain::{

@@ -1,7 +1,8 @@
 // Take a look at the generated `cornucopia.rs` file if you want to
 // see what it looks like under the hood.
-mod cornucopia;
-use crate::cornucopia::{
+mod gen;
+
+use crate::gen::{
     queries::{
         module_1::insert_book,
         module_2::{
