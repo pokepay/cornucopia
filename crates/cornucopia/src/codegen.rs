@@ -614,7 +614,7 @@ fn gen_query_fn<W: Write>(w: &mut W, module: &PreparedModule, query: &PreparedQu
                 let (send_sync, pre_ty, post_ty_lf, pre, post) = if ctx.is_async {
                     (
                         "+ Send + Sync",
-                        "std::pin::Pin<Box<dyn futures::Future<Output = Result",
+                        "std::pin::Pin<Box<dyn futures_util::Future<Output = Result",
                         "> + Send + 'a>>",
                         "Box::pin(self",
                         ")",
@@ -775,7 +775,7 @@ pub(crate) fn generate(preparation: Preparation, settings: CodegenSettings) -> S
                     move |w: &mut String| {
                         let ctx = GenCtx::new(depth, is_async, settings.derive_serde);
                         let import = if is_async {
-                            "use futures::{StreamExt, TryStreamExt};use futures; use cornucopia_async::GenericClient;"
+                            "use futures_util::{StreamExt, TryStreamExt}; use cornucopia_async::GenericClient;"
                         } else {
                             "use postgres::{fallible_iterator::FallibleIterator}; use cornucopia_sync::GenericClient;"
                         };
