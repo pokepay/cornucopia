@@ -35,7 +35,7 @@ pub use load_schema::load_schema;
 pub struct CodegenSettings {
     pub gen_async: bool,
     pub gen_sync: bool,
-    pub derive_ser: bool,
+    pub derive_serde: bool,
 }
 
 /// Generates Rust queries from PostgreSQL queries located at `queries_path`,

@@ -366,7 +366,6 @@ fn prepare_query(
     let stmt = client
         .prepare(&sql_str)
         .map_err(|e| Error::new_db_err(&e, module_info, &sql_span, &name))?;
-
     let (nullable_params_fields, params_name) = param.name_and_fields(types, &name, Some("Params"));
     let (nullable_row_fields, row_name) = row.name_and_fields(types, &name, None);
     let params_fields = {
@@ -412,7 +411,6 @@ fn prepare_query(
             validation::nullable_column_name(&module.info, nullable_col, stmt_cols)
                 .map_err(Error::from)?;
         }
-
         let mut row_fields = Vec::new();
         for (col_name, col_ty) in stmt_cols.iter().map(|c| (c.name().to_owned(), c.type_())) {
             let nullity = nullable_row_fields

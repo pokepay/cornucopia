@@ -27,7 +27,7 @@ struct Args {
     r#async: bool,
     /// Derive serde's `Serialize` trait for generated types.
     #[clap(long)]
-    serialize: bool,
+    serde: bool,
 }
 
 #[derive(Debug, Subcommand)]
@@ -53,13 +53,13 @@ pub fn run() -> Result<(), Error> {
         action,
         sync,
         r#async,
-        serialize,
+        serde,
     } = Args::parse();
 
     let settings = CodegenSettings {
         gen_async: r#async || !sync,
         gen_sync: sync,
-        derive_ser: serialize,
+        derive_serde: serde,
     };
 
     match action {
