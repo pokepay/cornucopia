@@ -58,7 +58,7 @@ pub(crate) struct CodegenTest {
     #[serde(default)]
     pub(crate) r#async: bool,
     #[serde(default)]
-    pub(crate) derive_ser: bool,
+    pub(crate) derive_serde: bool,
     #[serde(default)]
     pub(crate) run: bool,
 }
@@ -76,7 +76,7 @@ impl From<&CodegenTest> for CodegenSettings {
         Self {
             gen_async: codegen_test.r#async || !codegen_test.sync,
             gen_sync: codegen_test.sync,
-            derive_ser: codegen_test.derive_ser,
+            derive_serde: codegen_test.derive_serde,
         }
     }
 }
@@ -93,7 +93,7 @@ pub(crate) struct ErrorTest {
 impl From<&ErrorTest> for CodegenSettings {
     fn from(_error_test: &ErrorTest) -> Self {
         Self {
-            derive_ser: false,
+            derive_serde: false,
             gen_async: false,
             gen_sync: true,
         }

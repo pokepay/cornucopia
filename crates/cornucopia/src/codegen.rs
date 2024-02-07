@@ -18,15 +18,15 @@ pub struct GenCtx {
     // Should use async client and generate async code
     pub is_async: bool,
     // Should serializable struct
-    pub gen_derive: bool,
+    pub derive_serde: bool,
 }
 
 impl GenCtx {
-    pub fn new(depth: u8, is_async: bool, gen_derive: bool) -> Self {
+    pub fn new(depth: u8, is_async: bool, derive_serde: bool) -> Self {
         Self {
             depth,
             is_async,
-            gen_derive,
+            derive_serde,
         }
     }
 
@@ -346,8 +346,8 @@ fn gen_row_structs(w: &mut impl Write, row: &PreparedItem, ctx: &GenCtx) {
         let fields_name = fields.iter().map(|p| &p.ident.rs);
         let fields_ty = fields.iter().map(|p| p.own_struct(ctx));
         let copy = if *is_copy { "Copy" } else { "" };
-        let ser_str = if ctx.gen_derive {
-            "serde::Serialize,"
+        let ser_str = if ctx.derive_serde {
+            "serde::Deserialize, serde::Serialize,"
         } else {
             ""
         };
@@ -396,7 +396,7 @@ fn gen_row_query(w: &mut impl Write, row: &PreparedItem, ctx: &GenCtx) {
                 ".await",
                 "tokio_postgres",
                 "try_collect().await",
-                "futures::Stream",
+                "futures_util::Stream",
                 "",
                 ".into_stream()",
                 "cornucopia_async",
@@ -645,8 +645,8 @@ fn gen_custom_type(w: &mut impl Write, schema: &str, prepared: &PreparedType, ct
         name,
     } = prepared;
     let copy = if *is_copy { "Copy," } else { "" };
-    let ser_str = if ctx.gen_derive {
-        "serde::Serialize,"
+    let ser_str = if ctx.derive_serde {
+        "serde::Deserialize, serde::Serialize,"
     } else {
         ""
     };
@@ -754,13 +754,13 @@ pub(crate) fn generate(preparation: Preparation, settings: CodegenSettings) -> S
     gen_type_modules(
         w,
         &preparation.types,
-        &GenCtx::new(1, settings.gen_async, settings.derive_ser),
+        &GenCtx::new(1, settings.gen_async, settings.derive_serde),
     );
     // Generate queries
     let query_modules = preparation.modules.iter().map(|module| {
         move |w: &mut String| {
             let name = &module.info.name;
-            let ctx = GenCtx::new(2, settings.gen_async, settings.derive_ser);
+            let ctx = GenCtx::new(2, settings.gen_async, settings.derive_serde);
             let params_string = module
                 .params
                 .values()
@@ -773,7 +773,7 @@ pub(crate) fn generate(preparation: Preparation, settings: CodegenSettings) -> S
             let sync_specific = |w: &mut String| {
                 let gen_specific = |depth: u8, is_async: bool| {
                     move |w: &mut String| {
-                        let ctx = GenCtx::new(depth, is_async, settings.derive_ser);
+                        let ctx = GenCtx::new(depth, is_async, settings.derive_serde);
                         let import = if is_async {
                             "use futures::{StreamExt, TryStreamExt};use futures; use cornucopia_async::GenericClient;"
                         } else {
