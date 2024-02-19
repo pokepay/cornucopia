@@ -6,7 +6,7 @@
 #![allow(dead_code)]
 pub mod public {
     #[derive(
-        serde::Deserialize, serde::Serialize, Debug, postgres_types :: FromSql, Clone, PartialEq,
+        serde::Deserialize, serde::Serialize, Debug, postgres_types::FromSql, Clone, PartialEq,
     )]
     #[postgres(name = "clone_composite")]
     pub struct CloneComposite {
@@ -118,13 +118,7 @@ pub mod public {
         }
     }
     #[derive(
-        serde::Deserialize,
-        serde::Serialize,
-        Debug,
-        postgres_types :: FromSql,
-        Copy,
-        Clone,
-        PartialEq,
+        serde::Deserialize, serde::Serialize, Debug, postgres_types::FromSql, Copy, Clone, PartialEq,
     )]
     #[postgres(name = "copy_composite")]
     pub struct CopyComposite {
@@ -195,7 +189,7 @@ pub mod public {
         }
     }
     #[derive(
-        serde::Deserialize, serde::Serialize, Debug, postgres_types :: FromSql, Clone, PartialEq,
+        serde::Deserialize, serde::Serialize, Debug, postgres_types::FromSql, Clone, PartialEq,
     )]
     #[postgres(name = "domain_composite")]
     pub struct DomainComposite {
@@ -335,13 +329,13 @@ pub mod public {
                     if fields.len() != 4 {
                         return false;
                     }
-                    fields.iter().all(| f | match f.name()
+                    fields.iter().all(|f| match f.name()
                 {
-                    "txt" => < cornucopia_async::private::Domain::<&'a str> as postgres_types ::
-                    ToSql > :: accepts(f.type_()),"json" => < cornucopia_async::private::Domain::<&'a serde_json::value::Value> as postgres_types ::
-                    ToSql > :: accepts(f.type_()),"nb" => < cornucopia_async::private::Domain::<i32> as postgres_types ::
-                    ToSql > :: accepts(f.type_()),"arr" => < cornucopia_async::private::Domain::<cornucopia_async::private::DomainArray::<&'a serde_json::value::Value, &[&'a serde_json::value::Value]>> as postgres_types ::
-                    ToSql > :: accepts(f.type_()),_ => false,
+                    "txt" => <cornucopia_async::private::Domain::<&'a str> as
+                    postgres_types::ToSql>::accepts(f.type_()),"json" => <cornucopia_async::private::Domain::<&'a serde_json::value::Value> as
+                    postgres_types::ToSql>::accepts(f.type_()),"nb" => <cornucopia_async::private::Domain::<i32> as
+                    postgres_types::ToSql>::accepts(f.type_()),"arr" => <cornucopia_async::private::Domain::<cornucopia_async::private::DomainArray::<&'a serde_json::value::Value, &[&'a serde_json::value::Value]>> as
+                    postgres_types::ToSql>::accepts(f.type_()),_ => false,
                 })
                 }
                 _ => false,
@@ -356,7 +350,7 @@ pub mod public {
         }
     }
     #[derive(
-        serde::Deserialize, serde::Serialize, Debug, postgres_types :: FromSql, Clone, PartialEq,
+        serde::Deserialize, serde::Serialize, Debug, postgres_types::FromSql, Clone, PartialEq,
     )]
     #[postgres(name = "named_composite")]
     pub struct NamedComposite {
@@ -538,13 +532,7 @@ pub mod public {
         }
     }
     #[derive(
-        serde::Deserialize,
-        serde::Serialize,
-        Debug,
-        postgres_types :: FromSql,
-        Copy,
-        Clone,
-        PartialEq,
+        serde::Deserialize, serde::Serialize, Debug, postgres_types::FromSql, Copy, Clone, PartialEq,
     )]
     #[postgres(name = "named_composite.with_dot")]
     pub struct NamedCompositeWithDot {
@@ -619,7 +607,7 @@ pub mod public {
         }
     }
     #[derive(
-        serde::Deserialize, serde::Serialize, Debug, postgres_types :: FromSql, Clone, PartialEq,
+        serde::Deserialize, serde::Serialize, Debug, postgres_types::FromSql, Clone, PartialEq,
     )]
     #[postgres(name = "nullity_composite")]
     pub struct NullityComposite {
@@ -829,7 +817,7 @@ pub mod public {
         }
     }
     #[derive(
-        serde::Deserialize, serde::Serialize, Debug, postgres_types :: FromSql, Clone, PartialEq,
+        serde::Deserialize, serde::Serialize, Debug, postgres_types::FromSql, Clone, PartialEq,
     )]
     #[postgres(name = "custom_composite")]
     pub struct CustomComposite {
@@ -967,7 +955,7 @@ pub mod public {
         }
     }
     #[derive(
-        serde::Deserialize, serde::Serialize, Debug, postgres_types :: FromSql, Clone, PartialEq,
+        serde::Deserialize, serde::Serialize, Debug, postgres_types::FromSql, Clone, PartialEq,
     )]
     #[postgres(name = "nightmare_composite")]
     pub struct NightmareComposite {
@@ -1093,12 +1081,12 @@ pub mod public {
                     if fields.len() != 3 {
                         return false;
                     }
-                    fields.iter().all(| f | match f.name()
+                    fields.iter().all(|f| match f.name()
                 {
-                    "custom" => < &'a [super::public::CustomCompositeBorrowed<'a>] as postgres_types ::
-                    ToSql > :: accepts(f.type_()),"spongebob" => < &'a [super::public::SpongebobCharacter] as postgres_types ::
-                    ToSql > :: accepts(f.type_()),"domain" => < cornucopia_async::private::Domain::<&'a str> as postgres_types ::
-                    ToSql > :: accepts(f.type_()),_ => false,
+                    "custom" => <&'a [super::public::CustomCompositeBorrowed<'a>] as
+                    postgres_types::ToSql>::accepts(f.type_()),"spongebob" => <&'a [super::public::SpongebobCharacter] as
+                    postgres_types::ToSql>::accepts(f.type_()),"domain" => <cornucopia_async::private::Domain::<&'a str> as
+                    postgres_types::ToSql>::accepts(f.type_()),_ => false,
                 })
                 }
                 _ => false,
@@ -1113,13 +1101,7 @@ pub mod public {
         }
     }
     #[derive(
-        serde::Deserialize,
-        serde::Serialize,
-        Debug,
-        postgres_types :: FromSql,
-        Copy,
-        Clone,
-        PartialEq,
+        serde::Deserialize, serde::Serialize, Debug, postgres_types::FromSql, Copy, Clone, PartialEq,
     )]
     #[postgres(name = "syntax_composite")]
     pub struct SyntaxComposite {

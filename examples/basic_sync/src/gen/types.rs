@@ -85,7 +85,7 @@ pub mod public {
             }
         }
     }
-    #[derive(Debug, postgres_types :: FromSql, Clone, PartialEq)]
+    #[derive(Debug, postgres_types::FromSql, Clone, PartialEq)]
     #[postgres(name = "voiceactor")]
     pub struct Voiceactor {
         #[postgres(name = "name")]
