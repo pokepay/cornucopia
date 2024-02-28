@@ -1,3 +1,4 @@
+use async_trait::async_trait;
 use deadpool_postgres::{
     Client as DeadpoolClient, ClientWrapper, Transaction as DeadpoolTransaction,
 };
@@ -8,6 +9,7 @@ use tokio_postgres::{
 
 use crate::generic_client::GenericClient;
 
+#[async_trait]
 impl GenericClient for DeadpoolClient {
     async fn prepare(&self, query: &str) -> Result<Statement, Error> {
         ClientWrapper::prepare_cached(self, query).await
@@ -72,6 +74,7 @@ impl GenericClient for DeadpoolClient {
     }
 }
 
+#[async_trait]
 impl GenericClient for DeadpoolTransaction<'_> {
     async fn prepare(&self, query: &str) -> Result<Statement, Error> {
         DeadpoolTransaction::prepare_cached(self, query).await

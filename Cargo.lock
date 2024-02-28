@@ -484,6 +484,7 @@ dependencies = [
 name = "cornucopia_async"
 version = "0.6.0"
 dependencies = [
+ "async-trait",
  "cornucopia_client_core",
  "deadpool-postgres",
  "tokio-postgres",
