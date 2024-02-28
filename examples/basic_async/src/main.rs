@@ -14,6 +14,18 @@ use crate::gen::{
 };
 use cornucopia_async::Params;
 
+async fn not_working_pattern_without_async_trait(client: &deadpool_postgres::Client) {
+    use futures_util::{pin_mut, TryStreamExt};
+    let fetch = authors();
+    let stream = fetch.bind(client).iter().await.unwrap();
+    pin_mut!(stream);
+    while let Some(author) = stream.try_next().await.unwrap() {
+        dbg!(author);
+    }
+    let authors = authors().bind(client).all().await.unwrap();
+    dbg!(authors);
+}
+
 #[tokio::main]
 pub async fn main() {
     // You can learn which database connection types are compatible with Cornucopia in the book
@@ -22,8 +34,12 @@ pub async fn main() {
     let mut client = pool.get().await.unwrap();
 
     // The `all` method returns queried rows collected into a `Vec`
-    let authors = authors().bind(&client).all().await.unwrap();
-    dbg!(authors);
+    {
+        let client = pool.get().await.unwrap();
+        tokio::spawn(async move {
+            not_working_pattern_without_async_trait(&client).await;
+        });
+    }
 
     // Queries also accept transactions. Let's see how that works.
     {
