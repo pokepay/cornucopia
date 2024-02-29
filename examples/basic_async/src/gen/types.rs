@@ -5,7 +5,8 @@
 #![allow(unused_imports)]
 #![allow(dead_code)]
 pub mod public {
-    #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+    use std::str::FromStr;
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, strum::EnumString, strum::AsRefStr)]
     #[allow(non_camel_case_types)]
     pub enum SpongeBobCharacter {
         Bob,
@@ -18,12 +19,7 @@ pub mod public {
             ty: &postgres_types::Type,
             buf: &mut postgres_types::private::BytesMut,
         ) -> Result<postgres_types::IsNull, Box<dyn std::error::Error + Sync + Send>> {
-            let s = match *self {
-                SpongeBobCharacter::Bob => "Bob",
-                SpongeBobCharacter::Patrick => "Patrick",
-                SpongeBobCharacter::Squidward => "Squidward",
-            };
-            buf.extend_from_slice(s.as_bytes());
+            buf.extend_from_slice(self.as_ref().as_bytes());
             std::result::Result::Ok(postgres_types::IsNull::No)
         }
         fn accepts(ty: &postgres_types::Type) -> bool {
@@ -35,12 +31,7 @@ pub mod public {
                     if variants.len() != 3 {
                         return false;
                     }
-                    variants.iter().all(|v| match &**v {
-                        "Bob" => true,
-                        "Patrick" => true,
-                        "Squidward" => true,
-                        _ => false,
-                    })
+                    variants.iter().all(|v| Self::from_str(&**v).is_ok())
                 }
                 _ => false,
             }
@@ -58,12 +49,8 @@ pub mod public {
             ty: &postgres_types::Type,
             buf: &'a [u8],
         ) -> Result<SpongeBobCharacter, Box<dyn std::error::Error + Sync + Send>> {
-            match std::str::from_utf8(buf)? {
-                "Bob" => Ok(SpongeBobCharacter::Bob),
-                "Patrick" => Ok(SpongeBobCharacter::Patrick),
-                "Squidward" => Ok(SpongeBobCharacter::Squidward),
-                s => Result::Err(Into::into(format!("invalid variant `{}`", s))),
-            }
+            let s = std::str::from_utf8(buf)?;
+            Ok(Self::from_str(s).map_err(|e| format!("invalid variant `{}`", s))?)
         }
         fn accepts(ty: &postgres_types::Type) -> bool {
             if ty.name() != "sponge_bob_character" {
@@ -74,12 +61,7 @@ pub mod public {
                     if variants.len() != 3 {
                         return false;
                     }
-                    variants.iter().all(|v| match &**v {
-                        "Bob" => true,
-                        "Patrick" => true,
-                        "Squidward" => true,
-                        _ => false,
-                    })
+                    variants.iter().all(|v| Self::from_str(&**v).is_ok())
                 }
                 _ => false,
             }

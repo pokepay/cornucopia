@@ -5,6 +5,7 @@
 #![allow(unused_imports)]
 #![allow(dead_code)]
 pub mod public {
+    use std::str::FromStr;
     #[derive(
         serde::Deserialize, serde::Serialize, Debug, postgres_types::FromSql, Clone, PartialEq,
     )]
@@ -461,9 +462,20 @@ pub mod public {
             postgres_types::__to_sql_checked(self, ty, out)
         }
     }
-    #[derive(serde::Deserialize, serde::Serialize, Debug, Clone, Copy, PartialEq, Eq)]
+    #[derive(
+        serde::Deserialize,
+        serde::Serialize,
+        Debug,
+        Clone,
+        Copy,
+        PartialEq,
+        Eq,
+        strum::EnumString,
+        strum::AsRefStr,
+    )]
     #[allow(non_camel_case_types)]
     pub enum EnumWithDot {
+        #[strum(serialize = "variant.with_dot")]
         variant_with_dot,
     }
     impl<'a> postgres_types::ToSql for EnumWithDot {
@@ -472,10 +484,7 @@ pub mod public {
             ty: &postgres_types::Type,
             buf: &mut postgres_types::private::BytesMut,
         ) -> Result<postgres_types::IsNull, Box<dyn std::error::Error + Sync + Send>> {
-            let s = match *self {
-                EnumWithDot::variant_with_dot => "variant.with_dot",
-            };
-            buf.extend_from_slice(s.as_bytes());
+            buf.extend_from_slice(self.as_ref().as_bytes());
             std::result::Result::Ok(postgres_types::IsNull::No)
         }
         fn accepts(ty: &postgres_types::Type) -> bool {
@@ -487,10 +496,7 @@ pub mod public {
                     if variants.len() != 1 {
                         return false;
                     }
-                    variants.iter().all(|v| match &**v {
-                        "variant.with_dot" => true,
-                        _ => false,
-                    })
+                    variants.iter().all(|v| Self::from_str(&**v).is_ok())
                 }
                 _ => false,
             }
@@ -508,10 +514,8 @@ pub mod public {
             ty: &postgres_types::Type,
             buf: &'a [u8],
         ) -> Result<EnumWithDot, Box<dyn std::error::Error + Sync + Send>> {
-            match std::str::from_utf8(buf)? {
-                "variant.with_dot" => Ok(EnumWithDot::variant_with_dot),
-                s => Result::Err(Into::into(format!("invalid variant `{}`", s))),
-            }
+            let s = std::str::from_utf8(buf)?;
+            Ok(Self::from_str(s).map_err(|e| format!("invalid variant `{}`", s))?)
         }
         fn accepts(ty: &postgres_types::Type) -> bool {
             if ty.name() != "enum.with_dot" {
@@ -522,10 +526,7 @@ pub mod public {
                     if variants.len() != 1 {
                         return false;
                     }
-                    variants.iter().all(|v| match &**v {
-                        "variant.with_dot" => true,
-                        _ => false,
-                    })
+                    variants.iter().all(|v| Self::from_str(&**v).is_ok())
                 }
                 _ => false,
             }
@@ -736,7 +737,17 @@ pub mod public {
             postgres_types::__to_sql_checked(self, ty, out)
         }
     }
-    #[derive(serde::Deserialize, serde::Serialize, Debug, Clone, Copy, PartialEq, Eq)]
+    #[derive(
+        serde::Deserialize,
+        serde::Serialize,
+        Debug,
+        Clone,
+        Copy,
+        PartialEq,
+        Eq,
+        strum::EnumString,
+        strum::AsRefStr,
+    )]
     #[allow(non_camel_case_types)]
     pub enum SpongebobCharacter {
         Bob,
@@ -749,12 +760,7 @@ pub mod public {
             ty: &postgres_types::Type,
             buf: &mut postgres_types::private::BytesMut,
         ) -> Result<postgres_types::IsNull, Box<dyn std::error::Error + Sync + Send>> {
-            let s = match *self {
-                SpongebobCharacter::Bob => "Bob",
-                SpongebobCharacter::Patrick => "Patrick",
-                SpongebobCharacter::Squidward => "Squidward",
-            };
-            buf.extend_from_slice(s.as_bytes());
+            buf.extend_from_slice(self.as_ref().as_bytes());
             std::result::Result::Ok(postgres_types::IsNull::No)
         }
         fn accepts(ty: &postgres_types::Type) -> bool {
@@ -766,12 +772,7 @@ pub mod public {
                     if variants.len() != 3 {
                         return false;
                     }
-                    variants.iter().all(|v| match &**v {
-                        "Bob" => true,
-                        "Patrick" => true,
-                        "Squidward" => true,
-                        _ => false,
-                    })
+                    variants.iter().all(|v| Self::from_str(&**v).is_ok())
                 }
                 _ => false,
             }
@@ -789,12 +790,8 @@ pub mod public {
             ty: &postgres_types::Type,
             buf: &'a [u8],
         ) -> Result<SpongebobCharacter, Box<dyn std::error::Error + Sync + Send>> {
-            match std::str::from_utf8(buf)? {
-                "Bob" => Ok(SpongebobCharacter::Bob),
-                "Patrick" => Ok(SpongebobCharacter::Patrick),
-                "Squidward" => Ok(SpongebobCharacter::Squidward),
-                s => Result::Err(Into::into(format!("invalid variant `{}`", s))),
-            }
+            let s = std::str::from_utf8(buf)?;
+            Ok(Self::from_str(s).map_err(|e| format!("invalid variant `{}`", s))?)
         }
         fn accepts(ty: &postgres_types::Type) -> bool {
             if ty.name() != "spongebob_character" {
@@ -805,12 +802,7 @@ pub mod public {
                     if variants.len() != 3 {
                         return false;
                     }
-                    variants.iter().all(|v| match &**v {
-                        "Bob" => true,
-                        "Patrick" => true,
-                        "Squidward" => true,
-                        _ => false,
-                    })
+                    variants.iter().all(|v| Self::from_str(&**v).is_ok())
                 }
                 _ => false,
             }
@@ -1167,11 +1159,24 @@ pub mod public {
             postgres_types::__to_sql_checked(self, ty, out)
         }
     }
-    #[derive(serde::Deserialize, serde::Serialize, Debug, Clone, Copy, PartialEq, Eq)]
+    #[derive(
+        serde::Deserialize,
+        serde::Serialize,
+        Debug,
+        Clone,
+        Copy,
+        PartialEq,
+        Eq,
+        strum::EnumString,
+        strum::AsRefStr,
+    )]
     #[allow(non_camel_case_types)]
     pub enum SyntaxEnum {
+        #[strum(serialize = "async")]
         r#async,
+        #[strum(serialize = "box")]
         r#box,
+        #[strum(serialize = "I Love Chocolate")]
         I_Love_Chocolate,
     }
     impl<'a> postgres_types::ToSql for SyntaxEnum {
@@ -1180,12 +1185,7 @@ pub mod public {
             ty: &postgres_types::Type,
             buf: &mut postgres_types::private::BytesMut,
         ) -> Result<postgres_types::IsNull, Box<dyn std::error::Error + Sync + Send>> {
-            let s = match *self {
-                SyntaxEnum::r#async => "async",
-                SyntaxEnum::r#box => "box",
-                SyntaxEnum::I_Love_Chocolate => "I Love Chocolate",
-            };
-            buf.extend_from_slice(s.as_bytes());
+            buf.extend_from_slice(self.as_ref().as_bytes());
             std::result::Result::Ok(postgres_types::IsNull::No)
         }
         fn accepts(ty: &postgres_types::Type) -> bool {
@@ -1197,12 +1197,7 @@ pub mod public {
                     if variants.len() != 3 {
                         return false;
                     }
-                    variants.iter().all(|v| match &**v {
-                        "async" => true,
-                        "box" => true,
-                        "I Love Chocolate" => true,
-                        _ => false,
-                    })
+                    variants.iter().all(|v| Self::from_str(&**v).is_ok())
                 }
                 _ => false,
             }
@@ -1220,12 +1215,8 @@ pub mod public {
             ty: &postgres_types::Type,
             buf: &'a [u8],
         ) -> Result<SyntaxEnum, Box<dyn std::error::Error + Sync + Send>> {
-            match std::str::from_utf8(buf)? {
-                "async" => Ok(SyntaxEnum::r#async),
-                "box" => Ok(SyntaxEnum::r#box),
-                "I Love Chocolate" => Ok(SyntaxEnum::I_Love_Chocolate),
-                s => Result::Err(Into::into(format!("invalid variant `{}`", s))),
-            }
+            let s = std::str::from_utf8(buf)?;
+            Ok(Self::from_str(s).map_err(|e| format!("invalid variant `{}`", s))?)
         }
         fn accepts(ty: &postgres_types::Type) -> bool {
             if ty.name() != "syntax_enum" {
@@ -1236,12 +1227,7 @@ pub mod public {
                     if variants.len() != 3 {
                         return false;
                     }
-                    variants.iter().all(|v| match &**v {
-                        "async" => true,
-                        "box" => true,
-                        "I Love Chocolate" => true,
-                        _ => false,
-                    })
+                    variants.iter().all(|v| Self::from_str(&**v).is_ok())
                 }
                 _ => false,
             }

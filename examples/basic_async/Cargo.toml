@@ -18,3 +18,6 @@ tokio-postgres = "0.7.7"
 postgres-types = { version = "0.2.4", features = ["derive"] }
 ## Connection pooling
 deadpool-postgres = "0.12.1"
+
+## String enum conversion
+strum = { version = "0.26", features = ["derive"] }

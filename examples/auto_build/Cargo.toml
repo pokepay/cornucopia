@@ -21,6 +21,9 @@ postgres-types = "0.2.4"
 ## Connection pooling
 deadpool-postgres = "0.12.1"
 
+## String enum conversion
+strum = { version = "0.26", features = ["derive"] }
+
 [build-dependencies]
 # Cornucopia library to automatically
 ## If you're trying this example as a standalone crate,

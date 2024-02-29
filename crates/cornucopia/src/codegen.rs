@@ -102,10 +102,6 @@ impl PreparedField {
 }
 
 fn enum_sql(w: &mut impl Write, name: &str, enum_name: &str, variants: &[Ident]) {
-    let enum_names = std::iter::repeat(enum_name);
-    let db_variants_ident = variants.iter().map(|v| &v.db);
-    let rs_variants_ident = variants.iter().map(|v| &v.rs);
-
     let nb_variants = variants.len();
     code!(w =>
         impl<'a> postgres_types::ToSql for $enum_name {
@@ -114,10 +110,7 @@ fn enum_sql(w: &mut impl Write, name: &str, enum_name: &str, variants: &[Ident])
                 ty: &postgres_types::Type,
                 buf: &mut postgres_types::private::BytesMut,
             ) -> Result<postgres_types::IsNull, Box<dyn std::error::Error + Sync + Send>,> {
-                let s = match *self {
-                    $($enum_names::$rs_variants_ident => "$db_variants_ident",)
-                };
-                buf.extend_from_slice(s.as_bytes());
+                buf.extend_from_slice(self.as_ref().as_bytes());
                 std::result::Result::Ok(postgres_types::IsNull::No)
             }
             fn accepts(ty: &postgres_types::Type) -> bool {
@@ -129,10 +122,7 @@ fn enum_sql(w: &mut impl Write, name: &str, enum_name: &str, variants: &[Ident])
                         if variants.len() != $nb_variants {
                             return false;
                         }
-                        variants.iter().all(|v| match &**v {
-                            $("$db_variants_ident" => true,)
-                            _ => false,
-                        })
+                        variants.iter().all(|v| Self::from_str(&**v).is_ok())
                     }
                     _ => false,
                 }
@@ -149,14 +139,10 @@ fn enum_sql(w: &mut impl Write, name: &str, enum_name: &str, variants: &[Ident])
             fn from_sql(
                 ty: &postgres_types::Type,
                 buf: &'a [u8],
-            ) -> Result<$enum_name, Box<dyn std::error::Error + Sync + Send>,> {
-                match std::str::from_utf8(buf)? {
-                    $("$db_variants_ident" => Ok($enum_names::$rs_variants_ident),)
-                    s => Result::Err(Into::into(format!(
-                        "invalid variant `{}`",
-                        s
-                    ))),
-                }
+            ) -> Result<$enum_name, Box<dyn std::error::Error + Sync + Send>> {
+                let s = std::str::from_utf8(buf)?;
+                Ok(Self::from_str(s)
+                   .map_err(|e| format!("invalid variant `{}`", s))?)
             }
             fn accepts(ty: &postgres_types::Type) -> bool {
                 if ty.name() !=  "$name" {
@@ -167,10 +153,7 @@ fn enum_sql(w: &mut impl Write, name: &str, enum_name: &str, variants: &[Ident])
                         if variants.len() != $nb_variants {
                             return false;
                         }
-                        variants.iter().all(|v| match &**v {
-                            $("$db_variants_ident" => true,)
-                            _ => false,
-                        })
+                        variants.iter().all(|v| Self::from_str(&**v).is_ok())
                     }
                     _ => false,
                 }
@@ -654,9 +637,15 @@ fn gen_custom_type(w: &mut impl Write, schema: &str, prepared: &PreparedType, ct
     };
     match content {
         PreparedContent::Enum(variants) => {
-            let variants_ident = variants.iter().map(|v| &v.rs);
+            let variants_ident = variants.iter().map(|v| {
+                if v.db != v.rs {
+                    format!(r#"#[strum(serialize = "{}")] {}"#, v.db, v.rs)
+                } else {
+                    v.rs.to_owned()
+                }
+            });
             code!(w =>
-                #[derive($ser_str Debug, Clone, Copy, PartialEq, Eq)]
+                #[derive($ser_str Debug, Clone, Copy, PartialEq, Eq, strum::EnumString, strum::AsRefStr)]
                 #[allow(non_camel_case_types)]
                 pub enum $struct_name {
                     $($variants_ident,)
@@ -745,6 +734,7 @@ fn gen_type_modules(
 
             code!(w =>
             pub mod $schema {
+                use std::str::FromStr;
                 $!lazy
             });
         }
