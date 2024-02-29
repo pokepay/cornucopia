@@ -112,8 +112,18 @@ pub struct NullableIdent {
     pub inner_nullable: bool,
 }
 
+fn multiline_nullable_ident() -> impl Parser<char, (), Error = Simple<char>> {
+    just("\n")
+        .or(just("\n\r"))
+        .then_ignore(space())
+        .then(just("--:"))
+        .then_ignore(space())
+        .ignored()
+}
+
 fn parse_nullable_ident() -> impl Parser<char, Vec<NullableIdent>, Error = Simple<char>> {
     space()
+        .then_ignore(multiline_nullable_ident().or_not())
         .ignore_then(ident())
         .then(just('?').or_not())
         .then(just("[?]").or_not())
@@ -122,7 +132,7 @@ fn parse_nullable_ident() -> impl Parser<char, Vec<NullableIdent>, Error = Simpl
             nullable: null.is_some(),
             inner_nullable: inner_null.is_some(),
         })
-        .then_ignore(space())
+        .then_ignore(space().then_ignore(multiline_nullable_ident().or_not()))
         .separated_by(just(','))
         .allow_trailing()
         .delimited_by(just('('), just(')'))
