@@ -383,7 +383,7 @@ fn gen_row_query(w: &mut impl Write, row: &PreparedItem, ctx: &GenCtx) {
                 "try_collect().await",
                 "futures_util::Stream",
                 "",
-                ".into_stream()",
+                ".into_stream().boxed()",
                 "cornucopia_async",
             )
         } else {

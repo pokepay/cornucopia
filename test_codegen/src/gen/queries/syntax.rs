@@ -1027,7 +1027,8 @@ pub mod async_ {
             .await?;
             let mapped = stream
                 .map(move |res| res.map(|row| (self.mapper)((self.extractor)(&row))))
-                .into_stream();
+                .into_stream()
+                .boxed();
             Ok(mapped)
         }
     }
@@ -1083,7 +1084,8 @@ pub mod async_ {
             .await?;
             let mapped = stream
                 .map(move |res| res.map(|row| (self.mapper)((self.extractor)(&row))))
-                .into_stream();
+                .into_stream()
+                .boxed();
             Ok(mapped)
         }
     }
@@ -1139,7 +1141,8 @@ pub mod async_ {
             .await?;
             let mapped = stream
                 .map(move |res| res.map(|row| (self.mapper)((self.extractor)(&row))))
-                .into_stream();
+                .into_stream()
+                .boxed();
             Ok(mapped)
         }
     }
@@ -1195,7 +1198,8 @@ pub mod async_ {
             .await?;
             let mapped = stream
                 .map(move |res| res.map(|row| (self.mapper)((self.extractor)(&row))))
-                .into_stream();
+                .into_stream()
+                .boxed();
             Ok(mapped)
         }
     }
@@ -1251,7 +1255,8 @@ pub mod async_ {
             .await?;
             let mapped = stream
                 .map(move |res| res.map(|row| (self.mapper)((self.extractor)(&row))))
-                .into_stream();
+                .into_stream()
+                .boxed();
             Ok(mapped)
         }
     }

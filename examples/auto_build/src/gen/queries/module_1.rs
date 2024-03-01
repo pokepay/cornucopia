@@ -58,7 +58,8 @@ where
         .await?;
         let mapped = stream
             .map(move |res| res.map(|row| (self.mapper)((self.extractor)(&row))))
-            .into_stream();
+            .into_stream()
+            .boxed();
         Ok(mapped)
     }
 }
