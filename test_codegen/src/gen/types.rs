@@ -472,6 +472,7 @@ pub mod public {
         Eq,
         strum::EnumString,
         strum::AsRefStr,
+        std::hash::Hash,
     )]
     #[allow(non_camel_case_types)]
     pub enum EnumWithDot {
@@ -747,6 +748,7 @@ pub mod public {
         Eq,
         strum::EnumString,
         strum::AsRefStr,
+        std::hash::Hash,
     )]
     #[allow(non_camel_case_types)]
     pub enum SpongebobCharacter {
@@ -1169,6 +1171,7 @@ pub mod public {
         Eq,
         strum::EnumString,
         strum::AsRefStr,
+        std::hash::Hash,
     )]
     #[allow(non_camel_case_types)]
     pub enum SyntaxEnum {

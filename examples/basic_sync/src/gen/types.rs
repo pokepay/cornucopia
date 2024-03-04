@@ -6,7 +6,9 @@
 #![allow(dead_code)]
 pub mod public {
     use std::str::FromStr;
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, strum::EnumString, strum::AsRefStr)]
+    #[derive(
+        Debug, Clone, Copy, PartialEq, Eq, strum::EnumString, strum::AsRefStr, std::hash::Hash,
+    )]
     #[allow(non_camel_case_types)]
     pub enum SpongeBobCharacter {
         Bob,

@@ -645,7 +645,7 @@ fn gen_custom_type(w: &mut impl Write, schema: &str, prepared: &PreparedType, ct
                 }
             });
             code!(w =>
-                #[derive($ser_str Debug, Clone, Copy, PartialEq, Eq, strum::EnumString, strum::AsRefStr)]
+                #[derive($ser_str Debug, Clone, Copy, PartialEq, Eq, strum::EnumString, strum::AsRefStr, std::hash::Hash)]
                 #[allow(non_camel_case_types)]
                 pub enum $struct_name {
                     $($variants_ident,)
