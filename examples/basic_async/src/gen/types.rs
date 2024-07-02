@@ -7,7 +7,15 @@
 pub mod public {
     use std::str::FromStr;
     #[derive(
-        Debug, Clone, Copy, PartialEq, Eq, strum::EnumString, strum::AsRefStr, std::hash::Hash,
+        Debug,
+        Clone,
+        Copy,
+        PartialEq,
+        Eq,
+        strum::EnumString,
+        strum::AsRefStr,
+        std::hash::Hash,
+        num_derive::FromPrimitive,
     )]
     #[allow(non_camel_case_types)]
     pub enum SpongeBobCharacter {

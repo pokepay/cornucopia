@@ -44,3 +44,7 @@ rust_decimal = { version = "1.28.0", features = ["db-postgres"] }
 
 # string enum conversion
 strum = { version = "0.26", features = ["derive"] }
+
+## Number enum conversion
+num-traits = { version = "0.2", default-features = false }
+num-derive = { version = "0.4", default-features = false }
