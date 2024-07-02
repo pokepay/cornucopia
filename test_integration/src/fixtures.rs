@@ -60,6 +60,8 @@ pub(crate) struct CodegenTest {
     #[serde(default)]
     pub(crate) derive_serde: bool,
     #[serde(default)]
+    pub(crate) derive_graphql: bool,
+    #[serde(default)]
     pub(crate) run: bool,
     #[serde(default)]
     pub(crate) rustfmt: bool,
@@ -79,6 +81,7 @@ impl From<&CodegenTest> for CodegenSettings {
             gen_async: codegen_test.r#async || !codegen_test.sync,
             gen_sync: codegen_test.sync,
             derive_serde: codegen_test.derive_serde,
+            derive_graphql: codegen_test.derive_graphql,
             rustfmt: codegen_test.rustfmt,
         }
     }
@@ -97,6 +100,7 @@ impl From<&ErrorTest> for CodegenSettings {
     fn from(_error_test: &ErrorTest) -> Self {
         Self {
             derive_serde: false,
+            derive_graphql: false,
             gen_async: false,
             gen_sync: true,
             rustfmt: true,

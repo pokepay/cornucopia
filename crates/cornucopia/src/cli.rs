@@ -28,6 +28,10 @@ struct Args {
     /// Derive serde's `Serialize` trait for generated types.
     #[clap(long)]
     serde: bool,
+    /// Derive async-graphql trait for generated types.
+    /// Currently only Enum is supported.
+    #[clap(long)]
+    graphql: bool,
     /// Rustfmt generated modules
     #[clap(long)]
     rustfmt: bool,
@@ -57,6 +61,7 @@ pub fn run() -> Result<(), Error> {
         sync,
         r#async,
         serde,
+        graphql,
         rustfmt,
     } = Args::parse();
 
@@ -64,6 +69,7 @@ pub fn run() -> Result<(), Error> {
         gen_async: r#async || !sync,
         gen_sync: sync,
         derive_serde: serde,
+        derive_graphql: graphql,
         rustfmt,
     };
 

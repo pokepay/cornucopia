@@ -21,14 +21,17 @@ pub struct GenCtx {
     pub is_async: bool,
     // Should serializable struct
     pub derive_serde: bool,
+    // Should graphql struct
+    pub derive_graphql: bool,
 }
 
 impl GenCtx {
-    pub fn new(depth: u8, is_async: bool, derive_serde: bool) -> Self {
+    pub fn new(depth: u8, is_async: bool, derive_serde: bool, derive_graphql: bool) -> Self {
         Self {
             depth,
             is_async,
             derive_serde,
+            derive_graphql,
         }
     }
 
@@ -331,18 +334,17 @@ fn gen_row_structs(w: &mut impl Write, row: &PreparedItem, ctx: &GenCtx) {
         let fields_name = fields.iter().map(|p| &p.ident.rs);
         let fields_ty = fields.iter().map(|p| p.own_struct(ctx));
         let copy = if *is_copy { "Copy" } else { "" };
-        let ser_str = if ctx.derive_serde {
+        let derive_serde = if ctx.derive_serde {
             "serde::Deserialize, serde::Serialize,"
         } else {
             ""
         };
         code!(w =>
-            #[derive($ser_str Debug, Clone, PartialEq,$copy)]
+            #[derive($derive_serde Debug, Clone, PartialEq, $copy)]
             pub struct $name {
                 $(pub $fields_name : $fields_ty,)
             }
         );
-
         if !is_copy {
             let fields_name = fields.iter().map(|p| &p.ident.rs);
             let fields_ty = fields.iter().map(|p| p.brw_ty(true, ctx));
@@ -630,13 +632,18 @@ fn gen_custom_type(w: &mut impl Write, schema: &str, prepared: &PreparedType, ct
         name,
     } = prepared;
     let copy = if *is_copy { "Copy," } else { "" };
-    let ser_str = if ctx.derive_serde {
+    let derive_serde = if ctx.derive_serde {
         "serde::Deserialize, serde::Serialize,"
     } else {
         ""
     };
     match content {
         PreparedContent::Enum(variants) => {
+            let derive_graphql = if ctx.derive_graphql {
+                "async_graphql::Enum,"
+            } else {
+                ""
+            };
             let variants_ident = variants.iter().map(|v| {
                 if v.db != v.rs {
                     format!(r#"#[strum(serialize = "{}")] {}"#, v.db, v.rs)
@@ -645,7 +652,7 @@ fn gen_custom_type(w: &mut impl Write, schema: &str, prepared: &PreparedType, ct
                 }
             });
             code!(w =>
-                #[derive($ser_str Debug, Clone, Copy, PartialEq, Eq, strum::EnumString, strum::AsRefStr, std::hash::Hash)]
+                #[derive($derive_graphql $derive_serde Debug, Clone, Copy, PartialEq, Eq, strum::EnumString, strum::AsRefStr, std::hash::Hash)]
                 #[allow(non_camel_case_types)]
                 pub enum $struct_name {
                     $($variants_ident,)
@@ -659,7 +666,7 @@ fn gen_custom_type(w: &mut impl Write, schema: &str, prepared: &PreparedType, ct
             {
                 let fields_ty = fields.iter().map(|p| p.own_struct(ctx));
                 code!(w =>
-                    #[derive($ser_str Debug,postgres_types::FromSql,$copy Clone, PartialEq)]
+                    #[derive($derive_serde Debug,postgres_types::FromSql,$copy Clone, PartialEq)]
                     #[postgres(name = "$name")]
                     pub struct $struct_name {
                         $(
@@ -772,7 +779,12 @@ fn gen_query_modules(
     // Generate queries
     for module in modules.iter() {
         let name = &module.info.name;
-        let ctx = GenCtx::new(2, settings.gen_async, settings.derive_serde);
+        let ctx = GenCtx::new(
+            2,
+            settings.gen_async,
+            settings.derive_serde,
+            settings.derive_graphql,
+        );
         let params_string = module
             .params
             .values()
@@ -784,7 +796,12 @@ fn gen_query_modules(
         let sync_specific = |w: &mut String| {
             let gen_specific = |depth: u8, is_async: bool| {
                 move |w: &mut String| {
-                    let ctx = GenCtx::new(depth, is_async, settings.derive_serde);
+                    let ctx = GenCtx::new(
+                        depth,
+                        is_async,
+                        settings.derive_serde,
+                        settings.derive_graphql,
+                    );
                     let import = if is_async {
                         "use futures_util::{StreamExt, TryStreamExt}; use cornucopia_async::GenericClient;"
                     } else {
@@ -866,7 +883,12 @@ pub(crate) fn generate(preparation: Preparation, settings: CodegenSettings) -> G
         &mut root_body,
         &mut tree,
         &preparation.types,
-        &GenCtx::new(1, settings.gen_async, settings.derive_serde),
+        &GenCtx::new(
+            1,
+            settings.gen_async,
+            settings.derive_serde,
+            settings.derive_graphql,
+        ),
     );
 
     // Generate database query

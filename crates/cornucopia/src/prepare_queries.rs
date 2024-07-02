@@ -88,7 +88,7 @@ impl PreparedField {
 
 impl PreparedField {
     pub fn unwrapped_name(&self) -> String {
-        self.own_struct(&GenCtx::new(0, false, false))
+        self.own_struct(&GenCtx::new(0, false, false, false))
             .replace(['<', '>', '_'], "")
             .to_upper_camel_case()
     }
