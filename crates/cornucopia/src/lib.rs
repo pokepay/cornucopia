@@ -38,6 +38,7 @@ pub struct CodegenSettings {
     pub gen_async: bool,
     pub gen_sync: bool,
     pub derive_serde: bool,
+    pub derive_graphql: bool,
     pub rustfmt: bool,
 }
 
