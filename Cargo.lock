@@ -149,6 +149,8 @@ dependencies = [
  "cornucopia_async",
  "deadpool-postgres",
  "futures-util",
+ "num-derive",
+ "num-traits",
  "postgres-types",
  "strum",
  "tokio",
@@ -198,6 +200,8 @@ dependencies = [
  "cornucopia_async",
  "deadpool-postgres",
  "futures-util",
+ "num-derive",
+ "num-traits",
  "postgres-types",
  "strum",
  "tokio",
@@ -209,6 +213,8 @@ name = "basic_sync"
 version = "0.1.0"
 dependencies = [
  "cornucopia_sync",
+ "num-derive",
+ "num-traits",
  "postgres",
  "postgres-types",
  "strum",
@@ -1093,6 +1099,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "num-derive"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ed3955f1a9c7c0c15e092f9c887db08b1fc683305fdf6eb6684f22555355e202"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.52",
+]
+
+[[package]]
 name = "num-traits"
 version = "0.2.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1847,6 +1864,8 @@ dependencies = [
  "cornucopia_sync",
  "eui48",
  "futures-util",
+ "num-derive",
+ "num-traits",
  "postgres",
  "postgres-types",
  "rust_decimal",

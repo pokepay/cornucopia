@@ -17,3 +17,7 @@ cornucopia_sync = { path = "../../crates/client_sync" }
 
 ## String enum conversion
 strum = { version = "0.26", features = ["derive"] }
+
+## Number enum conversion
+num-traits = { version = "0.2", default-features = false }
+num-derive = { version = "0.4", default-features = false }
